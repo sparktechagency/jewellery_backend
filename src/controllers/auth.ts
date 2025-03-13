@@ -3,6 +3,7 @@ import {
   generateAccessToken,
   generatePasswordResetToken,
   generateRefreshToken,
+  verifyPasswordResetToken,
   verifyRefreshToken,
 } from "@utils/jwt";
 import { comparePassword, plainPasswordToHash } from "@utils/password";
@@ -98,10 +99,42 @@ const login = async (req: Request, res: Response) => {
     .json({ message: "Login successful", accessToken, refreshToken });
 };
 const forgot_password = async (req: Request, res: Response) => {
-  res.json({ message: "Login" });
+  const { email } = req?.body || {};
+
+  const error = validateRequiredFields({ email });
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(400).json({ message: "User not found" });
+    return;
+  }
+
+  await sendOTP(email, "forgot_password");
+  res.status(200).json({ message: "OTP sent to email" });
 };
 const reset_password = async (req: Request, res: Response) => {
-  res.json({ message: "Login" });
+  const { email, password, token } = req?.body || {};
+
+  const error = validateRequiredFields({ email, password, token });
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  try {
+    verifyPasswordResetToken(token);
+    const passwordHash = await plainPasswordToHash(password);
+    await User.updateOne({ email }, { $set: { passwordHash } });
+    res.status(200).json({ message: "Password reset successfully" });
+    return;
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
+    return;
+  }
 };
 const refresh_token = async (req: Request, res: Response) => {
   const refreshToken = req.headers.authorization?.split(" ")[1];

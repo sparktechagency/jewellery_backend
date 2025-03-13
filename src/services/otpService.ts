@@ -7,7 +7,7 @@ const generateOtp = () => {
 
 const sendOTP = async (
   email: string,
-  type: "signup" | "login" | "forgotPassword"
+  type: "signup" | "login" | "forgot_password"
 ) => {
   const otp = generateOtp();
   await OTP.create({ otp: `${email}:${otp}`, type });
