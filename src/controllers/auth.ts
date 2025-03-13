@@ -1,6 +1,11 @@
 import { sendOTP, verifyOTP } from "@services/otpService";
-import { generatePasswordResetToken } from "@utils/jwt";
-import { plainPasswordToHash } from "@utils/password";
+import {
+  generateAccessToken,
+  generatePasswordResetToken,
+  generateRefreshToken,
+  verifyRefreshToken,
+} from "@utils/jwt";
+import { comparePassword, plainPasswordToHash } from "@utils/password";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { User } from "src/schema";
@@ -61,7 +66,36 @@ const verify_otp = async (req: Request, res: Response) => {
   }
 };
 const login = async (req: Request, res: Response) => {
-  res.json({ message: "Login" });
+  const { email, password, remember_me } = req?.body || {};
+
+  const error = validateRequiredFields({ email, password });
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  const user = await User.findOne({ email });
+  if (!user) {
+    res.status(400).json({ message: "User not found" });
+    return;
+  }
+
+  const isPasswordCorrect = await comparePassword(password, user.password_hash);
+  if (!isPasswordCorrect) {
+    res.status(400).json({ message: "Invalid password" });
+    return;
+  }
+
+  const accessToken = generateAccessToken(
+    user._id.toString(),
+    user.email,
+    user.role
+  );
+  const refreshToken = generateRefreshToken(user.email, user.role, remember_me);
+
+  res
+    .status(200)
+    .json({ message: "Login successful", accessToken, refreshToken });
 };
 const forgot_password = async (req: Request, res: Response) => {
   res.json({ message: "Login" });
@@ -70,7 +104,34 @@ const reset_password = async (req: Request, res: Response) => {
   res.json({ message: "Login" });
 };
 const refresh_token = async (req: Request, res: Response) => {
-  res.json({ message: "Login" });
+  const refreshToken = req.headers.authorization?.split(" ")[1];
+
+  if (!refreshToken) {
+    res.status(400).json({ message: "Refresh token not found" });
+    return;
+  }
+
+  try {
+    const decoded = verifyRefreshToken(refreshToken);
+    const user = await User.findOne({ email: decoded.email });
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
+    const accessToken = generateAccessToken(
+      user._id.toString(),
+      user.email,
+      user.role
+    );
+    res.status(200).json({
+      message: "Token refreshed",
+      accessToken,
+    });
+    return;
+  } catch (error) {
+    res.status(400).json({ message: (error as Error).message });
+    return;
+  }
 };
 
 export {
