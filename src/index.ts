@@ -1,7 +1,7 @@
 import { config } from "dotenv";
 import express, { Response } from "express";
 import http from "http";
-import { registerAdminRoutes } from "./routes";
+import { registerAdminRoutes, registerUserRoutes } from "./routes";
 import startDB from "./db";
 import logger from "@utils/logger";
 
@@ -12,6 +12,7 @@ const app = express();
 
 app.use(express.json());
 app.use(logger);
+registerUserRoutes(app);
 registerAdminRoutes(app);
 
 const server = http.createServer(app);
