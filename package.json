@@ -10,11 +10,13 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.11.0",
+    "prettyjson": "^1.2.5",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
     "@types/node": "^22.13.8",
+    "@types/prettyjson": "^0.0.33",
     "concurrently": "^9.1.2",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
@@ -23,7 +25,7 @@
   },
   "scripts": {
     "build": "tsc --project tsconfig.json && tsc-alias -p tsconfig.json",
-    "start": "node dist/index.js",
+    "start": "node dist/src/index.js",
     "dev": "nodemon -r tsconfig-paths/register src/index.ts"
   }
 }
