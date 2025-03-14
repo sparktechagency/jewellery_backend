@@ -186,9 +186,12 @@ This app allows users to browse and purchase jewelry items, place custom orders,
   - response: {
     product_info,
     description,
-    reviews,
     related products
     }
+- get /get-review
+  - params:
+      - page: Number (optional)
+      - limit: Number (optional)
 - post /add-review
 
 #### Category Page
@@ -204,10 +207,10 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /stripe/create-payment
 
 #### Favorite Page
-- post /favorite
+- get /favorites
+- post /favorites/update
   - params:
     - type: add | remove
-- get /favorites
 
 #### Contact Us
 - post /contact

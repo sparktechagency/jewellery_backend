@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { model, Schema, Types } from "mongoose";
 
 const UserSchema = new Schema({
   name: { type: String, required: true },
@@ -36,7 +36,80 @@ const OTPSchema = new Schema({
   },
 });
 
+const CategorySchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  subcategory_of: {
+    type: Types.ObjectId,
+    ref: "category",
+  },
+});
+
+const ReviewSchema = new Schema(
+  {
+    rating: {
+      type: Number,
+      required: true,
+    },
+    product: {
+      type: Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
+    review: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const ProductSchema = new Schema({
+  name: {
+    type: String,
+    required: true,
+  },
+  category: {
+    type: Types.ObjectId,
+    ref: "category",
+  },
+  discount_percentage: {
+    type: Number,
+  },
+  in_stock: {
+    type: Boolean,
+  },
+  price: {
+    type: Number,
+  },
+  small_description: {
+    type: String,
+  },
+  big_description: {
+    type: String,
+  },
+  colors: {
+    type: [String],
+  },
+  sizes: {
+    type: [String],
+  },
+  reviews: {
+    type: [Types.ObjectId],
+    ref: "Review",
+  },
+});
+
+const FavoriteSchema = new Schema({});
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
+const Favorite = model("Favorite", FavoriteSchema);
+const Category = model("Category", CategorySchema);
+const Review = model("Review", ReviewSchema);
+const Product = model("Product", ProductSchema);
 
-export { User, OTP };
+export { User, OTP, Favorite, Category, Review, Product };
