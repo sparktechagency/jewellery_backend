@@ -121,6 +121,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 ---
 
 ## **4. User Flow**
+
 ![user flow](https://i.imgur.com/Z4sJuQE.png)
 
 ## **5. API Routes**
@@ -143,3 +144,77 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - **JWT** will be used to manage authentication.
 - Logged-in users will have access to custom orders and profile management features.
 - **Authorization middleware** will ensure that only logged-in users can place custom orders.
+
+---
+
+## **8. API Routes**
+
+#### Authentication
+- post /signup
+- post /verify-otp
+- post /login
+- post /forgot-password
+- post /reset-password
+- post /refresh-token
+
+#### Home
+- get /nav-categories
+- get /home
+  - response: { popular_items, testimonials }
+
+#### Search
+- get /categories
+- get /products
+  - params:
+    - query: String
+    - price_min: Number
+    - price_max: Number
+    - in_stock: Boolean
+    - upcoming: Boolean
+    - rating: Number
+    - sort: low_to_high | high_to_low
+    - category: ObjectId
+    - sub_category: ObjectId
+    - page: Number (optional)
+    - limit: Number (optional)
+
+#### Product Page
+- get /product
+  - response: {
+    product_info,
+    description,
+    reviews,
+    related products
+    }
+- post /add-review
+
+#### Category Page
+- get /category
+- get /sub-categories
+- get /products
+
+#### Custom Order
+- post /place-custom-order
+
+#### Checkout
+- post /place-order
+- post /stripe/create-payment
+
+#### Favorite Page
+- post /favorite
+  - params:
+    - type: add | remove
+- get /favorites
+
+#### Contact Us
+- post /contact-us
+
+#### Info Pages
+- get /info
+  - params:
+    - page: about-us | terms | privacy | shipping | returns | warranty | help | faqs
+
+#### Profile
+- get /profile
+- post /edit-profile
+- post /change-password
