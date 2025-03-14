@@ -41,6 +41,13 @@ const CategorySchema = new Schema({
     type: String,
     required: true,
   },
+  details: {
+    type: String,
+  },
+  img_url: {
+    type: String,
+    required: true,
+  },
   subcategory_of: {
     type: Types.ObjectId,
     ref: "category",

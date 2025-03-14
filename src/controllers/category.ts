@@ -1,8 +1,10 @@
+import uploadService from "@services/uploadService";
 import { Request, Response } from "express";
 import { Category } from "src/schema";
 
 const add_category = async (req: Request, res: Response) => {
-  const { name, parent } = req?.body || {};
+  const { parent, name, details } = req?.body || {};
+  const image = req.file;
 
   const category = await Category.findOne({ name });
 
@@ -35,7 +37,8 @@ const add_category = async (req: Request, res: Response) => {
         return;
       }
       try {
-        await Category.create({ name, subcategory_of: parentId });
+        const img_url = await uploadService(image, "image");
+        await Category.create({ name, subcategory_of: parentId, img_url });
         res.json({ message: "Subcategory created successfully" });
         return;
       } catch (error) {
@@ -47,7 +50,8 @@ const add_category = async (req: Request, res: Response) => {
   }
 
   try {
-    await Category.create({ name });
+    const img_url = await uploadService(image, "image");
+    await Category.create({ name, details, img_url });
     res.json({ message: "Category created successfully" });
   } catch (error) {
     console.log(error);
