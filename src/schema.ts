@@ -40,7 +40,6 @@ const CategorySchema = new Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
   },
   subcategory_of: {
     type: Types.ObjectId,

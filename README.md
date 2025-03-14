@@ -151,12 +151,12 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Authentication
 
-- post /signup
-- post /verify-otp
-- post /login
-- post /forgot-password
-- post /reset-password
-- post /refresh-token`
+- ✅ post /signup
+- ✅ post /verify-otp
+- ✅ post /login
+- ✅ post /forgot-password
+- ✅ post /reset-password
+- ✅ post /refresh-token`
 
 #### Home
 
@@ -213,7 +213,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
     - type: add | remove
 
 #### Contact Us
-- post /contact
+- ✅ post /contact
 
 #### Info Pages
 - get /info
@@ -221,9 +221,9 @@ This app allows users to browse and purchase jewelry items, place custom orders,
     - page: about-us | terms | privacy | shipping | returns | warranty | help | faqs
 
 #### Profile
-- get /profile
-- patch /profile/edit
-- post /profile/change-password
+- ✅ get /profile
+- ✅ patch /profile/edit
+- ✅ post /profile/change-password
 
 #### Appointment
 - get /book-appointment
@@ -231,8 +231,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /book-appointment
 
 #### Admin Routes
-- post /add-category
-- post /add-sub-category
+- ✅ post /add-category
 - post /add-testimonials
 - post /add-product
 - get /custom-orders

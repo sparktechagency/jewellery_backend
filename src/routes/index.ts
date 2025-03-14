@@ -10,7 +10,7 @@ const registerUserRoutes = (app: Express) => {
   app.use("/favorites", authorize(["user"]), userRoutes.favoritesRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
-  // app.use("/auth", adminRoutes.authRoutes);
+  app.use("/admin/category", authorize(["admin"]), adminRoutes.categoryRoutes);
 };
 
 export { registerUserRoutes, registerAdminRoutes };
