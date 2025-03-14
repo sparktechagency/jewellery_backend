@@ -216,8 +216,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Profile
 - get /profile
-- post /edit-profile
-- post /change-password
+- patch /profile/edit
+- post /profile/change-password
 
 #### Appointment
 - get /book-appointment

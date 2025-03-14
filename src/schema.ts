@@ -3,12 +3,19 @@ import { model, Schema } from "mongoose";
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
+  phone: { type: String },
   password_hash: { type: String, required: true },
   role: {
     type: String,
     required: true,
     default: "user",
     enum: ["user", "admin"],
+  },
+  shipping_address: {
+    street_address: { type: String },
+    city: { type: String },
+    state: { type: String },
+    zip_code: { type: String },
   },
 });
 
