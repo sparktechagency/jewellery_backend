@@ -127,8 +127,8 @@ const reset_password = async (req: Request, res: Response) => {
 
   try {
     verifyPasswordResetToken(token);
-    const passwordHash = await plainPasswordToHash(password);
-    await User.updateOne({ email }, { $set: { passwordHash } });
+    const password_hash = await plainPasswordToHash(password);
+    await User.updateOne({ email }, { $set: { password_hash } });
     res.status(200).json({ message: "Password reset successfully" });
     return;
   } catch (error) {
