@@ -155,7 +155,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /login
 - post /forgot-password
 - post /reset-password
-- post /refresh-token
+- post /refresh-token`
 
 #### Home
 - get /nav-categories
@@ -207,7 +207,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - get /favorites
 
 #### Contact Us
-- post /contact-us
+- post /contact
 
 #### Info Pages
 - get /info
@@ -218,3 +218,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - get /profile
 - post /edit-profile
 - post /change-password
+
+#### Appointment
+- get /book-appointment
+  - response: { showroom_location, unavailable_dates }
+- post /book-appointment

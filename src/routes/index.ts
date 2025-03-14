@@ -4,6 +4,7 @@ import * as adminRoutes from "./admin";
 
 const registerUserRoutes = (app: Express) => {
   app.use("/auth", userRoutes.authRoutes);
+  app.use("/contact", userRoutes.contactRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
   // app.use("/auth", adminRoutes.authRoutes);
