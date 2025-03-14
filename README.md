@@ -150,6 +150,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 ## **8. API Routes**
 
 #### Authentication
+
 - post /signup
 - post /verify-otp
 - post /login
@@ -158,11 +159,13 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /refresh-token`
 
 #### Home
+
 - get /nav-categories
 - get /home
   - response: { popular_items, testimonials }
 
 #### Search
+
 - get /categories
 - get /products
   - params:
@@ -223,3 +226,17 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - get /book-appointment
   - response: { showroom_location, unavailable_dates }
 - post /book-appointment
+
+#### Admin Routes
+- post /add-category
+- post /add-sub-category
+- post /add-testimonials
+- post /add-product
+- get /custom-orders
+- get /orders
+- post /info
+  - request: {
+      page: about-us | terms | privacy | shipping | returns | warranty | help | faqs,
+      content: String
+    }
+- get /appointments
