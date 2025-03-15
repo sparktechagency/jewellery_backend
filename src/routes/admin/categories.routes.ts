@@ -1,4 +1,4 @@
-import { add_category } from "@controllers/category";
+import { add_category } from "@controllers/categories";
 import { Router } from "express";
 import multer from "multer";
 

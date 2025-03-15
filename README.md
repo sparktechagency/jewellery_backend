@@ -160,13 +160,13 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Home
 
-- get /nav-categories
+- ✅ get /categories
 - get /home
   - response: { popular_items, testimonials }
 
 #### Search
 
-- get /categories
+- ✅ get /categories
 - get /products
   - params:
     - query: String
@@ -195,8 +195,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /add-review
 
 #### Category Page
-- get /category
-- get /sub-categories
+- ✅ get /category
 - get /products
 
 #### Custom Order

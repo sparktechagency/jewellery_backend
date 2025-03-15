@@ -60,4 +60,39 @@ const add_category = async (req: Request, res: Response) => {
   }
 };
 
-export { add_category };
+const get_categories = async (req: Request, res: Response) => {
+  const { type }: { type?: "nav" | "search" } = req?.query || {};
+
+  let selection;
+
+  if (type === "nav") {
+    selection = { __v: 0, details: 0, img_url: 0 };
+  } else if (type === "search") {
+    selection = { __v: 0, details: 0 };
+  }
+
+  const categories = await Category.find(
+    { subcategory_of: { $exists: false } },
+    selection
+  );
+
+  res.json(categories);
+};
+
+const get_category = async (req: Request, res: Response) => {
+  const { id } = req.params || {};
+
+  const category = await Category.findById(id, { __v: 0 });
+
+  const subcategories = await Category.find(
+    { subcategory_of: id },
+    { __v: 0, subcategory_of: 0 }
+  );
+
+  res.json({
+    ...category?.toObject(),
+    subcategories,
+  });
+};
+
+export { add_category, get_categories, get_category };
