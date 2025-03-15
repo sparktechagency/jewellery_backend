@@ -5,3 +5,4 @@ export { default as favoritesRoutes } from "./favorites.routes";
 export { default as categoriesRoutes } from "./categories.routes";
 export { default as infoRoutes } from "./info.routes";
 export { default as ordersRoutes } from "./orders.routes";
+export { default as appointmentRoutes } from "./appointment.routes";

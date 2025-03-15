@@ -160,6 +160,32 @@ const OrderSchema = new Schema({
   },
 });
 
+const AppointmentSchema = new Schema({
+  start: {
+    type: Date,
+    required: true,
+  },
+  end: {
+    type: Date,
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+  },
+  phone: {
+    type: String,
+    required: true,
+  },
+  notes: {
+    type: String,
+  },
+});
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
@@ -168,5 +194,16 @@ const Review = model("Review", ReviewSchema);
 const Product = model("Product", ProductSchema);
 const Info = model("Info", InfoSchema);
 const Order = model("Order", OrderSchema);
+const Appointment = model("Appointment", AppointmentSchema);
 
-export { User, OTP, Favorite, Category, Review, Product, Info, Order };
+export {
+  User,
+  OTP,
+  Favorite,
+  Category,
+  Review,
+  Product,
+  Info,
+  Order,
+  Appointment,
+};

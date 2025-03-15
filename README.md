@@ -225,9 +225,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /profile/change-password
 
 #### Appointment
-- 🚧 get /book-appointment
-  - response: { showroom_location, unavailable_dates }
-- 🚧 post /book-appointment
+- ✅ get /book-appointment
+- ✅ post /book-appointment
 
 #### Admin Routes
 - ✅ post /add-category
@@ -240,4 +239,4 @@ This app allows users to browse and purchase jewelry items, place custom orders,
       page: about-us | terms | privacy | shipping | returns | warranty | help | faqs,
       content: String
     }
-- get /appointments
+- ✅ get /appointments
