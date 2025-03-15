@@ -111,11 +111,23 @@ const ProductSchema = new Schema({
 
 const FavoriteSchema = new Schema({});
 
+const InfoSchema = new Schema({
+  page: {
+    type: String,
+    required: true,
+  },
+  content: {
+    type: String,
+    required: true,
+  },
+});
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
 const Category = model("Category", CategorySchema);
 const Review = model("Review", ReviewSchema);
 const Product = model("Product", ProductSchema);
+const Info = model("Info", InfoSchema);
 
-export { User, OTP, Favorite, Category, Review, Product };
+export { User, OTP, Favorite, Category, Review, Product, Info };

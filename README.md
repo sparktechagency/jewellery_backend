@@ -215,7 +215,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /contact
 
 #### Info Pages
-- get /info
+- ✅ get /info
   - params:
     - page: about-us | terms | privacy | shipping | returns | warranty | help | faqs
 
@@ -235,7 +235,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /add-product
 - get /custom-orders
 - get /orders
-- post /info
+- ✅ post /info
   - request: {
       page: about-us | terms | privacy | shipping | returns | warranty | help | faqs,
       content: String

@@ -9,9 +9,15 @@ const registerUserRoutes = (app: Express) => {
   app.use("/profile", authorize(["user"]), userRoutes.profileRoutes);
   app.use("/favorites", authorize(["user"]), userRoutes.favoritesRoutes);
   app.use("/categories", userRoutes.categoriesRoutes);
+  app.use("/info", userRoutes.infoRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
-  app.use("/admin/categories", authorize(["admin"]), adminRoutes.categoriesRoutes);
+  app.use(
+    "/admin/categories",
+    authorize(["admin"]),
+    adminRoutes.categoriesRoutes
+  );
+  app.use("/admin/info", authorize(["admin"]), adminRoutes.infoRoutes);
 };
 
 export { registerUserRoutes, registerAdminRoutes };
