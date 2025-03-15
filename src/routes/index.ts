@@ -10,6 +10,7 @@ const registerUserRoutes = (app: Express) => {
   app.use("/favorites", authorize(["user"]), userRoutes.favoritesRoutes);
   app.use("/categories", userRoutes.categoriesRoutes);
   app.use("/info", userRoutes.infoRoutes);
+  app.use("/orders", userRoutes.ordersRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
   app.use(

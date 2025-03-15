@@ -122,6 +122,44 @@ const InfoSchema = new Schema({
   },
 });
 
+const OrderSchema = new Schema({
+  order_type: {
+    type: String,
+    required: true,
+    enum: ["custom", "repair", "ready-made"],
+  },
+  custom_order_details: {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+    jewelry_type: {
+      type: String,
+      required: true,
+    },
+    description: {
+      type: String,
+      required: true,
+    },
+    image_url: {
+      type: String,
+      required: true,
+    },
+  },
+});
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
@@ -129,5 +167,6 @@ const Category = model("Category", CategorySchema);
 const Review = model("Review", ReviewSchema);
 const Product = model("Product", ProductSchema);
 const Info = model("Info", InfoSchema);
+const Order = model("Order", OrderSchema);
 
-export { User, OTP, Favorite, Category, Review, Product, Info };
+export { User, OTP, Favorite, Category, Review, Product, Info, Order };

@@ -199,7 +199,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - get /products
 
 #### Custom Order
-- post /place-custom-order
+- ✅ post /orders/custom
 
 #### Checkout
 - post /place-order
@@ -225,9 +225,9 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /profile/change-password
 
 #### Appointment
-- get /book-appointment
+- 🚧 get /book-appointment
   - response: { showroom_location, unavailable_dates }
-- post /book-appointment
+- 🚧 post /book-appointment
 
 #### Admin Routes
 - ✅ post /add-category
