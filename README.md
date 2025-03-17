@@ -161,8 +161,6 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 #### Home
 
 - ✅ get /categories
-- get /home
-  - response: { popular_items, testimonials }
 
 #### Search
 
@@ -230,8 +228,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Admin Routes
 - ✅ post /add-category
-- post /add-testimonials
-- post /add-product
+- ✅ post /add-product
 - get /custom-orders
 - get /orders
 - ✅ post /info

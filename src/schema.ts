@@ -81,20 +81,24 @@ const ProductSchema = new Schema({
   category: {
     type: Types.ObjectId,
     ref: "category",
+    required: true,
   },
-  discount_percentage: {
-    type: Number,
-  },
-  in_stock: {
-    type: Boolean,
+  availability: {
+    type: String,
+    enum: ["in_stock", "stock_out", "upcoming"],
+    required: true,
   },
   price: {
     type: Number,
+    required: true,
   },
-  small_description: {
+  discount_price: {
+    type: Number,
+  },
+  description: {
     type: String,
   },
-  big_description: {
+  details: {
     type: String,
   },
   colors: {
@@ -106,6 +110,9 @@ const ProductSchema = new Schema({
   reviews: {
     type: [Types.ObjectId],
     ref: "Review",
+  },
+  image_urls: {
+    type: [String],
   },
 });
 

@@ -25,6 +25,7 @@ const registerAdminRoutes = (app: Express) => {
     authorize(["admin"]),
     adminRoutes.appointmentRoutes
   );
+  app.use("/admin/products", authorize(["admin"]), adminRoutes.productsRoutes);
 };
 
 export { registerUserRoutes, registerAdminRoutes };
