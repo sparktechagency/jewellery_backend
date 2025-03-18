@@ -180,7 +180,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
     - limit: Number (optional)
 
 #### Product Page
-- get /product
+- 🚧 get /product
   - response: {
     product_info,
     description,
@@ -190,7 +190,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
   - params:
       - page: Number (optional)
       - limit: Number (optional)
-- post /add-review
+- 🚧 post /add-review
 
 #### Category Page
 - ✅ get /category
@@ -204,8 +204,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /stripe/create-payment
 
 #### Favorite Page
-- get /favorites
-- post /favorites/update
+- 🚧 get /favorites
+- 🚧 post /favorites/update
   - params:
     - type: add | remove
 
@@ -229,6 +229,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 #### Admin Routes
 - ✅ post /add-category
 - ✅ post /add-product
+- ✅ post /edit-product
 - get /custom-orders
 - get /orders
 - ✅ post /info
