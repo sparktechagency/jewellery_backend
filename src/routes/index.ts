@@ -12,6 +12,7 @@ const registerUserRoutes = (app: Express) => {
   app.use("/info", userRoutes.infoRoutes);
   app.use("/orders", userRoutes.ordersRoutes);
   app.use("/appointment", userRoutes.appointmentRoutes);
+  app.use("/products", userRoutes.productsRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
   app.use(

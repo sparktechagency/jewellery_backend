@@ -180,17 +180,17 @@ This app allows users to browse and purchase jewelry items, place custom orders,
     - limit: Number (optional)
 
 #### Product Page
-- 🚧 get /product
+- ✅ get /product
   - response: {
     product_info,
     description,
     related products
     }
-- get /get-review
+- ✅ get /get-review
   - params:
       - page: Number (optional)
       - limit: Number (optional)
-- 🚧 post /add-review
+- ✅ post /add-review
 
 #### Category Page
 - ✅ get /category

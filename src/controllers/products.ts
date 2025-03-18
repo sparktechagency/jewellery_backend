@@ -2,7 +2,7 @@ import uploadService from "@services/uploadService";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { isObjectIdOrHexString } from "mongoose";
-import { Category, Product } from "src/schema";
+import { Category, Product, Review } from "src/schema";
 
 const add_product = async (req: Request, res: Response) => {
   const {
@@ -156,4 +156,76 @@ const edit_product = async (req: Request, res: Response) => {
   }
 };
 
-export { add_product, edit_product };
+const get_product = async (req: Request, res: Response) => {
+  const { id } = req?.params || {};
+  const product = await Product.findById(id, { __v: 0, reviews: 0 });
+
+  if (!product) {
+    res.status(404).json({ message: "Product not found" });
+    return;
+  }
+
+  const similarProducts = await Product.find(
+    { category: product.category, _id: { $ne: product._id } },
+    { _id: 0, __v: 0 }
+  ).limit(5);
+
+  res.json({ product, similarProducts });
+};
+
+const add_review = async (req: Request, res: Response) => {
+  const { product_id, rating, name, email, review } = req.body || {};
+
+  const error = validateRequiredFields({
+    product_id,
+    rating,
+    name,
+    email,
+    review,
+  });
+
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  try {
+    await Review.create({ product: product_id, rating, name, email, review });
+    res.json({ message: "Review added successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const get_reviews = async (req: Request, res: Response) => {
+  const { product_id, page, limit } = req.query || {};
+
+  if (!product_id || !isObjectIdOrHexString(product_id)) {
+    res.status(400).json({ message: "Invalid product_id" });
+    return;
+  }
+
+  const pageNumber = parseInt(page as string) || 1;
+  const pageSize = parseInt(limit as string) || 10;
+  const skip = (pageNumber - 1) * pageSize;
+
+  const reviews = await Review.find({ product: product_id }, { __v: 0 })
+    .skip(skip)
+    .limit(pageSize);
+
+  const totalReviews = await Review.countDocuments({ product: product_id });
+  const totalPages = Math.ceil(totalReviews / pageSize);
+
+  res.json({
+    reviews,
+    pagination: {
+      totalReviews,
+      totalPages,
+      currentPage: pageNumber,
+      pageSize,
+    },
+  });
+};
+
+export { add_product, edit_product, get_product, add_review, get_reviews };

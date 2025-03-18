@@ -56,13 +56,21 @@ const CategorySchema = new Schema({
 
 const ReviewSchema = new Schema(
   {
+    product: {
+      type: Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
     rating: {
       type: Number,
       required: true,
     },
-    product: {
-      type: Types.ObjectId,
-      ref: "Product",
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
       required: true,
     },
     review: {
