@@ -1,6 +1,7 @@
 import {
   add_remove_favorites,
   add_review,
+  get_favorites,
   get_product,
   get_reviews,
 } from "@controllers/products";
@@ -11,9 +12,10 @@ const router = Router();
 
 router.get("/review", get_reviews);
 router.post("/review", add_review);
-router.get("/:id", get_product);
 
-router.get("/favorites", authorize(["user"]), get_product);
+router.get("/favorites", authorize(["user"]), get_favorites);
 router.post("/favorites", authorize(["user"]), add_remove_favorites);
+
+router.get("/:id", get_product);
 
 export default router;

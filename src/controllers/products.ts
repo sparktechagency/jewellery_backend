@@ -289,7 +289,30 @@ const add_remove_favorites = async (
   }
 };
 
-const get_favorites = async (req: Request, res: Response) => {};
+const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
+  try {
+    const favorite_ids = (await Favorite.find({ user: req.user?.id })).map(
+      (fav) => fav.product
+    );
+    const favoriteProducts = await Product.find(
+      { _id: { $in: favorite_ids } },
+      {
+        __v: 0,
+        description: 0,
+        details: 0,
+        colors: 0,
+        sizes: 0,
+        reviews: 0,
+        category: 0,
+        availability: 0,
+      }
+    );
+    res.json(favoriteProducts);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 export {
   add_product,

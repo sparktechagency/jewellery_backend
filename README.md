@@ -205,8 +205,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - post /stripe/create-payment
 
 #### Favorite Page
-- 🚧 get /favorites
-- 🚧 post /favorites/update
+- ✅ get /favorites
+- ✅ post /favorites/update
   - params:
     - type: add | remove
 
