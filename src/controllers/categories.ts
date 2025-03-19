@@ -1,5 +1,6 @@
 import uploadService from "@services/uploadService";
 import { Request, Response } from "express";
+import { isObjectIdOrHexString } from "mongoose";
 import { Category } from "src/schema";
 
 const add_category = async (req: Request, res: Response) => {
@@ -95,4 +96,64 @@ const get_category = async (req: Request, res: Response) => {
   });
 };
 
-export { add_category, get_categories, get_category };
+const edit_category = async (req: Request, res: Response) => {
+  const { id, name, details } = req.body || {};
+  const image = req.file;
+
+  if (!id || !isObjectIdOrHexString(id)) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
+  try {
+    const img_url = image ? await uploadService(image, "image") : null;
+    await category.updateOne({
+      ...(name && { name }),
+      ...(details && { details }),
+      ...(image && { img_url }),
+    });
+    res.json({ message: "Category updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+const delete_category = async (req: Request, res: Response) => {
+  const { id } = req.body || {};
+
+  if (!id || !isObjectIdOrHexString(id)) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
+  const category = await Category.findById(id);
+
+  if (!category) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
+  try {
+    await category.deleteOne();
+    res.json({ message: "Category deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export {
+  add_category,
+  get_categories,
+  get_category,
+  edit_category,
+  delete_category,
+};
