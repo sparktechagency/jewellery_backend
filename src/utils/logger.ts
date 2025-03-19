@@ -21,8 +21,8 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
 
   // Log the request details
   console.log(
-    chalk.blue(`[${new Date().toISOString()}]`),
-    chalk.green(`[${method}]`),
+    chalk.blue(`[${new Date().toLocaleString()}]`),
+    chalk.bgGreen.black.bold(`[${method}]`),
     chalk.cyan(url),
     chalk.yellow(`IP: ${ip}`),
     chalk.magenta(`User-Agent: ${userAgent}`)
@@ -39,8 +39,8 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
     const duration = (seconds * 1000 + nanoseconds / 1e6).toFixed(2); // Convert to ms
 
     console.log(
-      chalk.blue(`[${new Date().toISOString()}]`),
-      chalk.green(`[${method}]`),
+      chalk.blue(`[${new Date().toLocaleString()}]`),
+      chalk.bgGreen.black.bold(`[${method}]`),
       chalk.cyan(url),
       chalk.yellow(`Status: ${res.statusCode}`),
       chalk.red(`Duration: ${duration}ms`)
