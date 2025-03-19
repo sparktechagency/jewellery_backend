@@ -4,12 +4,13 @@ import http from "http";
 import { registerAdminRoutes, registerUserRoutes } from "./routes";
 import startDB from "./db";
 import logger from "@utils/logger";
+import cors from "cors";
 
 config();
 startDB();
 
 const app = express();
-
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(logger);
 registerUserRoutes(app);

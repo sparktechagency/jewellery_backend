@@ -1,8 +1,9 @@
+import { AuthenticatedRequest } from "@middleware/auth";
 import uploadService from "@services/uploadService";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { isObjectIdOrHexString } from "mongoose";
-import { Category, Product, Review } from "src/schema";
+import { Category, Favorite, Product, Review } from "src/schema";
 
 const add_product = async (req: Request, res: Response) => {
   const {
@@ -228,4 +229,74 @@ const get_reviews = async (req: Request, res: Response) => {
   });
 };
 
-export { add_product, edit_product, get_product, add_review, get_reviews };
+const add_remove_favorites = async (
+  req: AuthenticatedRequest,
+  res: Response
+) => {
+  const { product_id, type }: { product_id: string; type: "add" | "remove" } =
+    req.body || {};
+
+  if (!isObjectIdOrHexString(product_id)) {
+    res.status(400).json({ message: "Invalid product_id" });
+    return;
+  }
+
+  const product = await Product.findById(product_id);
+
+  if (!product) {
+    res.status(400).json({ message: "Invalid product_id" });
+    return;
+  }
+
+  if (type === "add") {
+    const favorite = await Favorite.findOne({
+      user: req.user?.id,
+      product: product_id,
+    });
+
+    if (favorite) {
+      res.status(400).json({ message: "Already added to favorites" });
+      return;
+    }
+
+    try {
+      await Favorite.create({ user: req.user?.id, product: product_id });
+      res.json({ message: "Added to favorites successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  if (type === "remove") {
+    const favorite = await Favorite.findOne({
+      user: req.user?.id,
+      product: product_id,
+    });
+
+    if (!favorite) {
+      res.status(400).json({ message: "Product not added to favorites" });
+      return;
+    }
+
+    try {
+      await Favorite.deleteMany({ user: req.user?.id, product: product_id });
+      res.json({ message: "Product removed from favorites successfully" });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+};
+
+const get_favorites = async (req: Request, res: Response) => {};
+
+export {
+  add_product,
+  edit_product,
+  get_product,
+  add_review,
+  get_reviews,
+  add_remove_favorites,
+  get_favorites,
+};

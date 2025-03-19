@@ -124,7 +124,18 @@ const ProductSchema = new Schema({
   },
 });
 
-const FavoriteSchema = new Schema({});
+const FavoriteSchema = new Schema({
+  user: {
+    type: Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  product: {
+    type: Types.ObjectId,
+    ref: "Product",
+    required: true,
+  },
+});
 
 const InfoSchema = new Schema({
   page: {

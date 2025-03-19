@@ -31,9 +31,10 @@ const signup = async (req: Request, res: Response) => {
 
   await User.create({ name, email, password_hash });
 
-  await sendOTP(email, "signup");
+  const otp = await sendOTP(email, "signup");
+  // await sendOTP(email, "signup");
 
-  res.json({ message: "OTP sent to email" });
+  res.json({ message: "OTP sent to email", otp });
 };
 const verify_otp = async (req: Request, res: Response) => {
   const { email, otp } = req?.body || {};
@@ -54,7 +55,7 @@ const verify_otp = async (req: Request, res: Response) => {
     if (otpDoc.type === "forgot_password") {
       const passwordResetToken = generatePasswordResetToken(email);
       res.status(200).json({
-        message: "Password reset token generated",
+        message: "Email verified successfully",
         passwordResetToken,
       });
       return;
@@ -113,8 +114,9 @@ const forgot_password = async (req: Request, res: Response) => {
     return;
   }
 
-  await sendOTP(email, "forgot_password");
-  res.status(200).json({ message: "OTP sent to email" });
+  const otp = await sendOTP(email, "forgot_password");
+  // await sendOTP(email, "forgot_password");
+  res.status(200).json({ message: "OTP sent to email", otp });
 };
 const reset_password = async (req: Request, res: Response) => {
   const { email, password, token } = req?.body || {};
