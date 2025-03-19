@@ -168,7 +168,37 @@ const refresh_token = async (req: Request, res: Response) => {
     return;
   }
 };
+const resend = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email: emailFromBody, type } = req.body || {};
 
+    // normalize email
+    const email = emailFromBody.trim().toLowerCase();
+
+    const existingUser = await User.findOne({ email }).exec();
+    if (!existingUser) {
+      res.status(400).json({
+        message: `User with the email ${email} doesn't exist.`,
+      });
+      return;
+    }
+
+    const otp = await sendOTP(email, type);
+    // await sendOTP(email, type);
+
+    const response: { success: boolean; message: string; otp?: string } = {
+      success: true,
+      message: "OTP sent successfully",
+      otp,
+    };
+
+    res.status(200).json(response);
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Internal Server Error",
+    });
+  }
+};
 export {
   signup,
   verify_otp,
@@ -176,4 +206,5 @@ export {
   forgot_password,
   reset_password,
   refresh_token,
+  resend,
 };

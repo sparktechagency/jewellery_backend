@@ -153,6 +153,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 - ✅ post /signup
 - ✅ post /verify-otp
+- ✅ post /resend
 - ✅ post /login
 - ✅ post /forgot-password
 - ✅ post /reset-password
