@@ -20,9 +20,16 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
   }
 
   // Log the request details
+  const methodColor = method === "GET" ? chalk.bgGreen.black :
+                      method === "POST" ? chalk.bgBlue.white :
+                      method === "PUT" ? chalk.bgYellow.black :
+                      method === "PATCH" ? chalk.bgMagenta.white :
+                      method === "DELETE" ? chalk.bgRed.white :
+                      chalk.bgWhite.black;
+
   console.log(
     chalk.blue(`[${new Date().toLocaleString()}]`),
-    chalk.bgGreen.black.bold(`[${method}]`),
+    methodColor.bold(` ${method} `), // Solid background color for methods
     chalk.cyan(url),
     chalk.yellow(`IP: ${ip}`),
     chalk.magenta(`User-Agent: ${userAgent}`)
@@ -40,7 +47,7 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
 
     console.log(
       chalk.blue(`[${new Date().toLocaleString()}]`),
-      chalk.bgGreen.black.bold(`[${method}]`),
+      methodColor.bold(` ${method} `),
       chalk.cyan(url),
       chalk.yellow(`Status: ${res.statusCode}`),
       chalk.red(`Duration: ${duration}ms`)
