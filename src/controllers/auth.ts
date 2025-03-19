@@ -31,10 +31,9 @@ const signup = async (req: Request, res: Response) => {
 
   await User.create({ name, email, password_hash });
 
-  const otp = await sendOTP(email, "signup");
-  // await sendOTP(email, "signup");
+  await sendOTP(email, "signup");
 
-  res.json({ message: "OTP sent to email", otp });
+  res.json({ message: "OTP sent to email" });
 };
 const verify_otp = async (req: Request, res: Response) => {
   const { email, otp } = req?.body || {};
@@ -114,9 +113,9 @@ const forgot_password = async (req: Request, res: Response) => {
     return;
   }
 
-  const otp = await sendOTP(email, "forgot_password");
-  // await sendOTP(email, "forgot_password");
-  res.status(200).json({ message: "OTP sent to email", otp });
+  await sendOTP(email, "forgot_password");
+
+  res.status(200).json({ message: "OTP sent to email" });
 };
 const reset_password = async (req: Request, res: Response) => {
   const { email, password, token } = req?.body || {};
@@ -183,13 +182,11 @@ const resend = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const otp = await sendOTP(email, type);
-    // await sendOTP(email, type);
+    await sendOTP(email, type);
 
     const response: { success: boolean; message: string; otp?: string } = {
       success: true,
       message: "OTP sent successfully",
-      otp,
     };
 
     res.status(200).json(response);
