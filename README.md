@@ -229,8 +229,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Admin Routes
 - ✅ post /add-category
-- 👷 patch /update-category
-- 👷 delete /delete-category
+- ✅ patch /update-category
+- ✅ delete /delete-category
 - ✅ post /add-product
 - ✅ post /edit-product
 - 👷 post /delete-product

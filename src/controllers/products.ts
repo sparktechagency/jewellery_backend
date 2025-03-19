@@ -157,6 +157,30 @@ const edit_product = async (req: Request, res: Response) => {
   }
 };
 
+const delete_product = async (req: Request, res: Response) => {
+  const { id } = req.body || {};
+
+  if (!id || !isObjectIdOrHexString(id)) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
+  const product = await Product.findById(id);
+
+  if (!product) {
+    res.status(404).json({ message: "Product not found" });
+    return;
+  }
+
+  try {
+    await product.deleteOne();
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 const get_product = async (req: Request, res: Response) => {
   const { id } = req?.params || {};
   const product = await Product.findById(id, { __v: 0, reviews: 0 });
@@ -317,6 +341,7 @@ const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
 export {
   add_product,
   edit_product,
+  delete_product,
   get_product,
   add_review,
   get_reviews,
