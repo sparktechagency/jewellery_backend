@@ -166,7 +166,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 #### Search
 
 - ✅ get /categories
-- get /products
+- 🚧 get /products
   - params:
     - query: String
     - price_min: Number
@@ -195,14 +195,14 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Category Page
 - ✅ get /category
-- get /products
+- 🚧 get /products
 
 #### Custom Order
 - ✅ post /orders/custom
 
 #### Checkout
-- post /place-order
-- post /stripe/create-payment
+- 🚧 post /place-order
+- 🚧 post /stripe/create-payment
 
 #### Favorite Page
 - ✅ get /favorites
@@ -233,9 +233,9 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ delete /delete-category
 - ✅ post /add-product
 - ✅ post /edit-product
-- 👷 post /delete-product
-- get /custom-orders
-- get /orders
+- ✅ post /delete-product
+- 🚧 get /custom-orders
+- 🚧 get /orders
 - ✅ post /info
   - request: {
       page: about-us | terms | privacy | shipping | returns | warranty | help | faqs,

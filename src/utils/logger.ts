@@ -11,28 +11,39 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
 
   // Process body only for relevant methods
   let body = null;
-  if (["POST", "PUT", "PATCH"].includes(method) && Object.keys(req.body).length > 0) {
+  if (
+    ["POST", "PUT", "PATCH"].includes(method) &&
+    Object.keys(req.body).length > 0
+  ) {
     body = prettyjson.render(req.body, {
-      keysColor: 'cyan',
-      stringColor: 'yellow',
-      numberColor: 'magenta',
+      keysColor: "cyan",
+      stringColor: "yellow",
+      numberColor: "magenta",
     });
   }
 
   // Log the request details
-  const methodColor = method === "GET" ? chalk.bgGreen.black :
-                      method === "POST" ? chalk.bgBlue.white :
-                      method === "PUT" ? chalk.bgYellow.black :
-                      method === "PATCH" ? chalk.bgMagenta.white :
-                      method === "DELETE" ? chalk.bgRed.white :
-                      chalk.bgWhite.black;
+  const methodColor =
+    method === "GET"
+      ? chalk.bgGreen.black
+      : method === "POST"
+      ? chalk.bgYellowBright.white
+      : method === "PUT"
+      ? chalk.bgBlue.black
+      : method === "PATCH"
+      ? chalk.bgMagenta.white
+      : method === "DELETE"
+      ? chalk.bgRed.white
+      : chalk.bgWhite.black;
 
+  console.log(`\n`);
+  console.log(chalk.gray("----------------------------------------------"));
   console.log(
-    chalk.blue(`[${new Date().toLocaleString()}]`),
     methodColor.bold(` ${method} `), // Solid background color for methods
     chalk.cyan(url),
     chalk.yellow(`IP: ${ip}`),
-    chalk.magenta(`User-Agent: ${userAgent}`)
+    chalk.magenta(`User-Agent: ${userAgent}`),
+    chalk.blue(`[${new Date().toLocaleString()}]`)
   );
 
   if (body) {
@@ -46,12 +57,14 @@ const logger = (req: Request, res: Response, next: NextFunction) => {
     const duration = (seconds * 1000 + nanoseconds / 1e6).toFixed(2); // Convert to ms
 
     console.log(
-      chalk.blue(`[${new Date().toLocaleString()}]`),
       methodColor.bold(` ${method} `),
       chalk.cyan(url),
       chalk.yellow(`Status: ${res.statusCode}`),
-      chalk.red(`Duration: ${duration}ms`)
+      chalk.red(`Duration: ${duration}ms`),
+      chalk.blue(`[${new Date().toLocaleString()}]`)
     );
+    console.log(chalk.gray("----------------------------------------------"));
+    console.log(`\n`);
   });
 
   next();
