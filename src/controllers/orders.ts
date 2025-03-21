@@ -105,9 +105,9 @@ const place_order = async (req: any, res: Response) => {
         product_data: {
           name: product.name,
         },
-        unit_amount: (product.discount_price
-          ? product.discount_price
-          : product.price) * 100,
+        unit_amount:
+          (product.discount_price ? product.discount_price : product.price) *
+          100,
       },
       quantity: products.find((p) => p.id === product.id).quantity,
     }));
@@ -124,4 +124,36 @@ const place_order = async (req: any, res: Response) => {
   }
 };
 
-export { custom_or_repair_order, place_order };
+const get_orders = async (req: Request, res: Response) => {
+  const { type } = req.query;
+
+  const error = validateRequiredFields({ type });
+
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  try {
+    const orders = await Order.find(
+      type === "ready-made"
+        ? { order_type: "ready-made" }
+        : { order_type: { $ne: "ready-made" } },
+      type === "ready-made"
+        ? {
+            custom_order_details: 0,
+            __v: 0,
+          }
+        : {
+            ready_made_details: 0,
+            __v: 0,
+          }
+    );
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export { custom_or_repair_order, place_order, get_orders };

@@ -234,8 +234,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /add-product
 - ✅ post /edit-product
 - ✅ post /delete-product
-- 🚧 get /custom-orders
-- 🚧 get /orders
+- ✅ get /orders
 - ✅ post /info
   - request: {
       page: about-us | terms | privacy | shipping | returns | warranty | help | faqs,

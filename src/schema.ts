@@ -148,67 +148,78 @@ const InfoSchema = new Schema({
   },
 });
 
-const OrderSchema = new Schema({
-  order_type: {
-    type: String,
-    required: true,
-    enum: ["custom", "repair", "ready-made"],
-  },
-  custom_order_details: {
-    name: {
+const OrderSchema = new Schema(
+  {
+    order_type: {
       type: String,
+      required: true,
+      enum: ["custom", "repair", "ready-made"],
     },
-    email: {
-      type: String,
-    },
-    phone: {
-      type: String,
-    },
-    address: {
-      type: String,
-    },
-    jewelry_type: {
-      type: String,
-    },
-    description: {
-      type: String,
-    },
-    image_url: {
-      type: String,
-    },
-  },
-  ready_made_details: {
-    shipping_address: {
-      type: String,
-    },
-    city: {
-      type: String,
-    },
-    state: {
-      type: String,
-    },
-    zip: {
-      type: String,
-    },
-    products: [
-      {
-        product_id: {
-          type: Types.ObjectId,
-          ref: "Product",
-        },
-        color: {
-          type: String,
-        },
-        size: {
-          type: String,
-        },
-        quantity: {
-          type: Number,
-        },
+    custom_order_details: {
+      name: {
+        type: String,
       },
-    ],
+      email: {
+        type: String,
+      },
+      phone: {
+        type: String,
+      },
+      address: {
+        type: String,
+      },
+      jewelry_type: {
+        type: String,
+      },
+      description: {
+        type: String,
+      },
+      image_url: {
+        type: String,
+      },
+    },
+    ready_made_details: {
+      shipping_address: {
+        type: String,
+      },
+      city: {
+        type: String,
+      },
+      state: {
+        type: String,
+      },
+      zip: {
+        type: String,
+      },
+      products: [
+        {
+          product_id: {
+            type: Types.ObjectId,
+            ref: "Product",
+          },
+          color: {
+            type: String,
+          },
+          size: {
+            type: String,
+          },
+          quantity: {
+            type: Number,
+          },
+        },
+      ],
+    },
+    payment_status: {
+      type: String,
+      default: "Pending",
+    },
+    order_status: {
+      type: String,
+      default: "Pending",
+    },
   },
-});
+  { timestamps: true }
+);
 
 const AppointmentSchema = new Schema({
   start: {
