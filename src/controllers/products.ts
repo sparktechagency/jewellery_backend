@@ -357,6 +357,49 @@ const get_products = async (req: Request, res: Response) => {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+const get_products_new = async (req: Request, res: Response) => {
+  const {
+    sort,
+    category,
+    page,
+    limit,
+  } = req.query || {};
+
+  try {
+    const pageNumber = parseInt(page as string) || 1;
+    const pageSize = parseInt(limit as string) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const filters = {
+      ...(category && { category }),
+    };
+
+    const products = await Product.find(filters)
+      .populate({
+        path: "category",
+        populate: {
+          path: "subcategory_of",
+        },
+      })
+      .skip(skip)
+      .limit(pageSize);
+
+    const totalProducts = await Product.countDocuments(filters);
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    const pagination = {
+      totalProducts,
+      totalPages,
+      currentPage: pageNumber,
+      pageSize,
+    };
+
+    res.json({ products, pagination });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
 
 export {
   add_product,
@@ -368,4 +411,5 @@ export {
   add_remove_favorites,
   get_favorites,
   get_products,
+  get_products_new,
 };

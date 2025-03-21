@@ -171,8 +171,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
     - query: String
     - price_min: Number
     - price_max: Number
-    - in_stock: Boolean
-    - upcoming: Boolean
+    - availability: in_stock | stock_out | upcoming
     - rating: Number
     - sort: low_to_high | high_to_low
     - category: ObjectId
@@ -195,7 +194,6 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 
 #### Category Page
 - ✅ get /category
-- 🚧 get /products
 
 #### Custom Order
 - ✅ post /orders/custom
