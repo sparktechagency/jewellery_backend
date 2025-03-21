@@ -201,8 +201,8 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /orders/custom
 
 #### Checkout
-- 🚧 post /place-order
-- 🚧 post /stripe/create-payment
+- ✅ post /place-order
+- 🚧 post /stripe/webhook
 
 #### Favorite Page
 - ✅ get /favorites

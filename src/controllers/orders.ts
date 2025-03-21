@@ -95,7 +95,7 @@ const place_order = async (req: any, res: Response) => {
         city,
         state,
         zip,
-        products: products.map((p) => p.id),
+        products: products.map((p) => ({ product_id: p.id, ...p })),
       },
     });
 
@@ -105,9 +105,9 @@ const place_order = async (req: any, res: Response) => {
         product_data: {
           name: product.name,
         },
-        unit_amount: product.discount_price
+        unit_amount: (product.discount_price
           ? product.discount_price
-          : product.price,
+          : product.price) * 100,
       },
       quantity: products.find((p) => p.id === product.id).quantity,
     }));

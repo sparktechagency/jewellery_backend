@@ -190,10 +190,23 @@ const OrderSchema = new Schema({
     zip: {
       type: String,
     },
-    products: {
-      type: [Types.ObjectId],
-      ref: "Product",
-    },
+    products: [
+      {
+        product_id: {
+          type: Types.ObjectId,
+          ref: "Product",
+        },
+        color: {
+          type: String,
+        },
+        size: {
+          type: String,
+        },
+        quantity: {
+          type: Number,
+        },
+      },
+    ],
   },
 });
 
