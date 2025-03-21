@@ -50,7 +50,7 @@ const CategorySchema = new Schema({
   },
   subcategory_of: {
     type: Types.ObjectId,
-    ref: "category",
+    ref: "Category",
   },
 });
 
@@ -88,7 +88,7 @@ const ProductSchema = new Schema({
   },
   category: {
     type: Types.ObjectId,
-    ref: "category",
+    ref: "Category",
     required: true,
   },
   availability: {
@@ -157,31 +157,42 @@ const OrderSchema = new Schema({
   custom_order_details: {
     name: {
       type: String,
-      required: true,
     },
     email: {
       type: String,
-      required: true,
     },
     phone: {
       type: String,
-      required: true,
     },
     address: {
       type: String,
-      required: true,
     },
     jewelry_type: {
       type: String,
-      required: true,
     },
     description: {
       type: String,
-      required: true,
     },
     image_url: {
       type: String,
-      required: true,
+    },
+  },
+  ready_made_details: {
+    shipping_address: {
+      type: String,
+    },
+    city: {
+      type: String,
+    },
+    state: {
+      type: String,
+    },
+    zip: {
+      type: String,
+    },
+    products: {
+      type: [Types.ObjectId],
+      ref: "Product",
     },
   },
 });

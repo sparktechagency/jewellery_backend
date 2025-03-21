@@ -39,7 +39,11 @@ const add_product = async (req: Request, res: Response) => {
     return;
   }
 
-  if (discount_price >= price) {
+  if (
+    discount_price !== undefined &&
+    discount_price !== null &&
+    Number(discount_price) >= Number(price)
+  ) {
     res
       .status(400)
       .json({ message: "Discount price has to be lower than regular price" });
@@ -338,6 +342,22 @@ const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
   }
 };
 
+const get_products = async (req: Request, res: Response) => {
+  try {
+    const products = await Product.find({}).populate({
+      path: "category",
+      populate: {
+        path: "subcategory_of",
+      },
+    });
+
+    res.json(products);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   add_product,
   edit_product,
@@ -347,4 +367,5 @@ export {
   get_reviews,
   add_remove_favorites,
   get_favorites,
+  get_products,
 };

@@ -83,6 +83,11 @@ const get_categories = async (req: Request, res: Response) => {
 const get_category = async (req: Request, res: Response) => {
   const { id } = req.params || {};
 
+  if (!id || !isObjectIdOrHexString(id)) {
+    res.status(400).json({ message: "Invalid ID" });
+    return;
+  }
+
   const category = await Category.findById(id, { __v: 0 });
 
   const subcategories = await Category.find(
