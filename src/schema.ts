@@ -115,9 +115,8 @@ const ProductSchema = new Schema({
   sizes: {
     type: [String],
   },
-  reviews: {
-    type: [Types.ObjectId],
-    ref: "Review",
+  ratings: {
+    type: [Number],
   },
   image_urls: {
     type: [String],

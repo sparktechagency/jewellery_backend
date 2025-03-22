@@ -166,7 +166,7 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 #### Search
 
 - ✅ get /categories
-- 🚧 get /products
+- ✅ get /products
   - params:
     - query: String
     - price_min: Number

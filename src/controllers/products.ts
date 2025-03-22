@@ -218,8 +218,23 @@ const add_review = async (req: Request, res: Response) => {
     return;
   }
 
+  const product = await Product.findById(product_id);
+
+  if (!product) {
+    res.status(400).json({ message: "Invalid product_id" });
+    return;
+  }
+
   try {
-    await Review.create({ product: product_id, rating, name, email, review });
+    await Review.create({
+      product: product_id,
+      rating,
+      name,
+      email,
+      review,
+    });
+    product.ratings.push(rating);
+    await product.save();
     res.json({ message: "Review added successfully" });
   } catch (error) {
     console.log(error);
@@ -359,6 +374,11 @@ const get_products = async (req: Request, res: Response) => {
 };
 const get_products_new = async (req: Request, res: Response) => {
   const {
+    query,
+    price_min,
+    price_max,
+    availability,
+    rating,
     sort,
     category,
     page,
@@ -372,17 +392,62 @@ const get_products_new = async (req: Request, res: Response) => {
 
     const filters = {
       ...(category && { category }),
+      ...(query && { name: { $regex: query, $options: "i" } }),
+      ...(price_min && { price: { $gte: Number(price_min) } }),
+      ...(price_max && { price: { $lte: Number(price_max) } }),
+      ...(price_min &&
+        price_max && {
+          price: { $gte: Number(price_min), $lte: Number(price_max) },
+        }),
+      ...(availability && { availability }),
+      ...(rating && {
+        $expr: {
+          $gte: [
+            {
+              $avg: "$ratings",
+            },
+            Number(rating),
+          ],
+        },
+      }),
     };
 
-    const products = await Product.find(filters)
+    const sortOption: { [key: string]: 1 | -1 } =
+      sort === "low_to_high"
+        ? { price: 1 }
+        : sort === "high_to_low"
+        ? { price: -1 }
+        : {};
+
+    const productsWithRatings = await Product.find({
+      ...filters,
+      ratings: { $ne: [] },
+    })
       .populate({
         path: "category",
         populate: {
           path: "subcategory_of",
         },
       })
+      .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
+
+    const productsWithoutRatings = await Product.find({
+      ...filters,
+      ratings: [],
+    })
+      .populate({
+        path: "category",
+        populate: {
+          path: "subcategory_of",
+        },
+      })
+      .sort(sortOption)
+      .skip(skip)
+      .limit(pageSize);
+
+    const products = [...productsWithRatings, ...productsWithoutRatings];
 
     const totalProducts = await Product.countDocuments(filters);
     const totalPages = Math.ceil(totalProducts / pageSize);
