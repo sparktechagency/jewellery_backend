@@ -17,6 +17,12 @@ const UserSchema = new Schema({
     state: { type: String },
     zip_code: { type: String },
   },
+  account_status: {
+    type: String,
+    required: true,
+    default: "Active",
+    enum: ["Active", "Banned"],
+  },
 });
 
 const OTPSchema = new Schema({
@@ -215,6 +221,9 @@ const OrderSchema = new Schema(
     order_status: {
       type: String,
       default: "Pending",
+    },
+    custom_order_price: {
+      type: Number,
     },
   },
   { timestamps: true }

@@ -207,7 +207,7 @@ const edit_order = async (req: Request, res: Response) => {
     await order.updateOne({
       ...(order_status && { order_status }),
       ...(payment_status && { payment_status }),
-      ...(price && { price }),
+      ...(price && { custom_order_price: price }),
     });
     res.json({ message: "Order updated successfully" });
   } catch (error) {

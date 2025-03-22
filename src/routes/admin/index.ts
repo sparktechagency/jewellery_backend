@@ -3,3 +3,4 @@ export { default as infoRoutes } from "./info.routes";
 export { default as appointmentRoutes } from "./appointment.routes";
 export { default as productsRoutes } from "./products.routes";
 export { default as ordersRoutes } from "./orders.routes";
+export { default as usersRoutes } from "./users.routes";
