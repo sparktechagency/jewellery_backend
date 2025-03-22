@@ -1,4 +1,5 @@
 import { AuthenticatedRequest } from "@middleware/auth";
+import uploadService from "@services/uploadService";
 import { comparePassword, plainPasswordToHash } from "@utils/password";
 import { Request, Response } from "express";
 import { User } from "src/schema";
@@ -21,6 +22,7 @@ const get_profile = async (req: AuthenticatedRequest, res: Response) => {
 const edit_profile = async (req: AuthenticatedRequest, res: Response) => {
   const { name, email, phone, street_address, city, state, zip_code } =
     req?.body || {};
+  const photo = req.file;
 
   const user = await User.findById(req.user?.id);
 
@@ -30,10 +32,17 @@ const edit_profile = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   try {
+    let photo_url;
+
+    if (photo) {
+      photo_url = await uploadService(photo, "image");
+    }
+
     await user.updateOne({
       ...(name && { name }),
       ...(email && { email }),
       ...(phone && { phone }),
+      ...(photo_url && { photo_url }),
       shipping_address: {
         ...(street_address && {
           street_address,
