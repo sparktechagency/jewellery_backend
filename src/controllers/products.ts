@@ -243,7 +243,7 @@ const add_review = async (req: Request, res: Response) => {
 };
 
 const get_reviews = async (req: Request, res: Response) => {
-  const { product_id, page, limit } = req.query || {};
+  const { product_id, page, limit, rating, sort } = req.query || {};
 
   if (!product_id || !isObjectIdOrHexString(product_id)) {
     res.status(400).json({ message: "Invalid product_id" });
@@ -254,11 +254,24 @@ const get_reviews = async (req: Request, res: Response) => {
   const pageSize = parseInt(limit as string) || 10;
   const skip = (pageNumber - 1) * pageSize;
 
-  const reviews = await Review.find({ product: product_id }, { __v: 0 })
-    .skip(skip)
-    .limit(pageSize);
+  const filters = {
+    product: product_id,
+    ...(rating && { rating }),
+  };
 
-  const totalReviews = await Review.countDocuments({ product: product_id });
+  const sortOption: { [key: string]: 1 | -1 } =
+    sort === "asc"
+      ? { createdAt: 1 }
+      : sort === "desc"
+      ? { createdAt: -1 }
+      : {};
+
+  const reviews = await Review.find(filters, { __v: 0 })
+    .skip(skip)
+    .limit(pageSize)
+    .sort(sortOption);
+
+  const totalReviews = await Review.countDocuments(filters);
   const totalPages = Math.ceil(totalReviews / pageSize);
 
   res.json({
@@ -358,21 +371,6 @@ const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const get_products = async (req: Request, res: Response) => {
-  try {
-    const products = await Product.find({}).populate({
-      path: "category",
-      populate: {
-        path: "subcategory_of",
-      },
-    });
-
-    res.json(products);
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Internal Server Error" });
-  }
-};
-const get_products_new = async (req: Request, res: Response) => {
   const {
     query,
     price_min,
@@ -476,5 +474,4 @@ export {
   add_remove_favorites,
   get_favorites,
   get_products,
-  get_products_new,
 };
