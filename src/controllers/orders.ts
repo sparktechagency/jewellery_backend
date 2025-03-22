@@ -148,7 +148,10 @@ const get_orders = async (req: Request, res: Response) => {
             ready_made_details: 0,
             __v: 0,
           }
-    );
+    ).populate({
+      path: "ready_made_details.products.product_id",
+      model: "Product",
+    });
     res.json(orders);
   } catch (error) {
     console.log(error);
@@ -156,4 +159,61 @@ const get_orders = async (req: Request, res: Response) => {
   }
 };
 
-export { custom_or_repair_order, place_order, get_orders };
+const edit_order = async (req: Request, res: Response) => {
+  const { order_id, order_status, payment_status, price } = req.body || {};
+
+  const error = validateRequiredFields({
+    order_id,
+  });
+
+  if (error) {
+    res.status(400).json({ message: error });
+    return;
+  }
+
+  const order = await Order.findById(order_id);
+
+  if (!order) {
+    res.status(400).json({ message: "Invalid order_id" });
+    return;
+  }
+
+  if (order.order_type === "ready-made" && price) {
+    res
+      .status(400)
+      .json({ message: "Can't update price for this type of orders" });
+    return;
+  }
+
+  if (
+    order_status &&
+    !["Pending", "In Progress", "Shipped", "Completed", "Canceled"].includes(
+      order_status
+    )
+  ) {
+    res.status(400).json({ message: "Invalid order_status" });
+    return;
+  }
+
+  if (
+    payment_status &&
+    !["Pending", "Paid", "Canceled"].includes(payment_status)
+  ) {
+    res.status(400).json({ message: "Invalid payment_status" });
+    return;
+  }
+
+  try {
+    await order.updateOne({
+      ...(order_status && { order_status }),
+      ...(payment_status && { payment_status }),
+      ...(price && { price }),
+    });
+    res.json({ message: "Order updated successfully" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+export { custom_or_repair_order, place_order, get_orders, edit_order };
