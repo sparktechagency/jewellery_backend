@@ -38,7 +38,7 @@ const authorize = (allowedRoles: Array<"user" | "admin">) => {
 
       const user = await User.findById(decoded.id);
 
-      if (!user) {
+      if (!user || user.account_status === "Banned") {
         res.status(401).json({ message: "Unauthorized" });
         return;
       }
