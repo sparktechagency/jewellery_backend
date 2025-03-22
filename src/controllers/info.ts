@@ -31,7 +31,11 @@ const add_info = async (req: Request, res: Response) => {
   const info = await Info.findOne({ page });
 
   try {
-    await Info.create({ page, content });
+    if (!info) {
+      await Info.create({ page, content });
+    } else {
+      await info.updateOne({ page, content });
+    }
     res.json({
       message: `Info for ${page} ${info ? "updated" : "added"} successfully`,
     });
