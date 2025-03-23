@@ -33,9 +33,25 @@ const contact_us = async (req: Request, res: Response) => {
 };
 
 const get_contact_us = async (req: Request, res: Response) => {
+  const { page = 1, limit = 10 } = req.query || {};
   try {
-    const contacts = await Contact.find({}, { __v: 0 });
-    res.json(contacts);
+    const pageNumber = parseInt(page as string) || 1;
+    const pageSize = parseInt(limit as string) || 10;
+    const totalContacts = await Contact.countDocuments();
+    const totalPages = Math.ceil(totalContacts / pageSize);
+
+    const contacts = await Contact.find({}, { __v: 0 })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    const pagination = {
+      totalContacts,
+      totalPages,
+      currentPage: pageNumber,
+      pageSize,
+    };
+
+    res.json({ contacts, pagination });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });

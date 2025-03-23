@@ -346,11 +346,18 @@ const add_remove_favorites = async (
 };
 
 const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
+  const { page = 1, limit = 10 } = req.query || {};
+
   try {
+    const pageNumber = parseInt(page as string) || 1;
+    const pageSize = parseInt(limit as string) || 10;
+    const totalContacts = await Favorite.countDocuments({ user: req.user?.id });
+    const totalPages = Math.ceil(totalContacts / pageSize);
+
     const favorite_ids = (await Favorite.find({ user: req.user?.id })).map(
       (fav) => fav.product
     );
-    const favoriteProducts = await Product.find(
+    const products = await Product.find(
       { _id: { $in: favorite_ids } },
       {
         __v: 0,
@@ -362,8 +369,17 @@ const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
         category: 0,
         availability: 0,
       }
-    );
-    res.json(favoriteProducts);
+    )
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    const pagination = {
+      totalContacts,
+      totalPages,
+      currentPage: pageNumber,
+      pageSize,
+    };
+    res.json({ products, pagination });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });

@@ -125,7 +125,7 @@ const place_order = async (req: any, res: Response) => {
 };
 
 const get_orders = async (req: Request, res: Response) => {
-  const { type } = req.query;
+  const { type, page = 1, limit = 10 } = req.query;
 
   const error = validateRequiredFields({ type });
 
@@ -135,24 +135,35 @@ const get_orders = async (req: Request, res: Response) => {
   }
 
   try {
-    const orders = await Order.find(
+    const filters =
       type === "ready-made"
         ? { order_type: "ready-made" }
-        : { order_type: { $ne: "ready-made" } },
-      type === "ready-made"
-        ? {
-            custom_order_details: 0,
-            __v: 0,
-          }
-        : {
-            ready_made_details: 0,
-            __v: 0,
-          }
-    ).populate({
-      path: "ready_made_details.products.product_id",
-      model: "Product",
-    });
-    res.json(orders);
+        : { order_type: { $ne: "ready-made" } };
+
+    const pageNumber = parseInt(page as string) || 1;
+    const pageSize = parseInt(limit as string) || 10;
+    const totalContacts = await Order.countDocuments(filters);
+    const totalPages = Math.ceil(totalContacts / pageSize);
+
+    const orders = await Order.find(filters, {
+      custom_order_details: 0,
+      ready_made_details: 0,
+      __v: 0,
+    })
+      .populate({
+        path: "ready_made_details.products.product_id",
+        model: "Product",
+      })
+      .skip((pageNumber - 1) * pageSize)
+      .limit(pageSize);
+
+    const pagination = {
+      totalContacts,
+      totalPages,
+      currentPage: pageNumber,
+      pageSize,
+    };
+    res.json({ orders, pagination });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });

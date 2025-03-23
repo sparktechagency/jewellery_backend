@@ -1,7 +1,7 @@
 import { AuthenticatedRequest } from "@middleware/auth";
 import uploadService from "@services/uploadService";
 import { comparePassword, plainPasswordToHash } from "@utils/password";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { User } from "src/schema";
 
 const get_profile = async (req: AuthenticatedRequest, res: Response) => {

@@ -85,9 +85,27 @@ const get_unavailable_times = async (req: Request, res: Response) => {
 };
 
 const get_appointments = async (req: Request, res: Response) => {
+  const { page, limit } = req.query || {};
   try {
-    const appointments = await Appointment.find({}, { _id: 0, __v: 0 });
-    res.json(appointments);
+    const pageNumber = parseInt(page as string) || 1;
+    const pageSize = parseInt(limit as string) || 10;
+    const skip = (pageNumber - 1) * pageSize;
+
+    const appointments = await Appointment.find({}, { _id: 0, __v: 0 })
+      .skip(skip)
+      .limit(pageSize);
+
+    const totalAppointments = await Appointment.countDocuments();
+    const totalPages = Math.ceil(totalAppointments / pageSize);
+
+    const pagination = {
+      page: pageNumber,
+      limit: pageSize,
+      totalPages,
+      totalAppointments,
+    };
+
+    res.json({ appointments, pagination });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error" });
