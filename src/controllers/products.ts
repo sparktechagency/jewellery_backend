@@ -123,7 +123,7 @@ const edit_product = async (req: Request, res: Response) => {
     return;
   }
 
-  if (discount_price && discount_price >= price) {
+  if (discount_price && Number(discount_price) >= Number(price)) {
     res
       .status(400)
       .json({ message: "Discount price has to be lower than regular price" });

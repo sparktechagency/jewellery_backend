@@ -12,6 +12,7 @@ const registerUserRoutes = (app: Express) => {
   app.use("/orders", userRoutes.ordersRoutes);
   app.use("/appointment", userRoutes.appointmentRoutes);
   app.use("/products", userRoutes.productsRoutes);
+  app.use("/faq", userRoutes.faqRoutes);
 };
 const registerAdminRoutes = (app: Express) => {
   app.use(
@@ -28,6 +29,8 @@ const registerAdminRoutes = (app: Express) => {
   app.use("/admin/products", authorize(["admin"]), adminRoutes.productsRoutes);
   app.use("/admin/orders", authorize(["admin"]), adminRoutes.ordersRoutes);
   app.use("/admin/users", authorize(["admin"]), adminRoutes.usersRoutes);
+  app.use("/admin/contact", authorize(["admin"]), adminRoutes.contactRoutes);
+  app.use("/admin/faq", authorize(["admin"]), adminRoutes.faqRoutes);
 };
 
 export { registerUserRoutes, registerAdminRoutes };

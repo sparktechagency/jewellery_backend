@@ -242,9 +242,10 @@ This app allows users to browse and purchase jewelry items, place custom orders,
       content: String
     }
 - ✅ get /appointments
-- get /contact-us
+- ✅ get /contact-us
 - get /faq
 - post /faq
-- patch /faq
+- patch /faq 
 - delete /faq
 - get /dashboard
+- get /notifications

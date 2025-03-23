@@ -256,6 +256,42 @@ const AppointmentSchema = new Schema({
   },
 });
 
+const ContactSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    message: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
+const FAQSchema = new Schema(
+  {
+    question: {
+      type: String,
+      required: true,
+    },
+    answer: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true }
+);
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
@@ -265,6 +301,8 @@ const Product = model("Product", ProductSchema);
 const Info = model("Info", InfoSchema);
 const Order = model("Order", OrderSchema);
 const Appointment = model("Appointment", AppointmentSchema);
+const Contact = model("Contact", ContactSchema);
+const FAQ = model("FAQ", FAQSchema);
 
 export {
   User,
@@ -276,4 +314,6 @@ export {
   Info,
   Order,
   Appointment,
+  Contact,
+  FAQ,
 };
