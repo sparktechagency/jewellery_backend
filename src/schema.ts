@@ -292,6 +292,25 @@ const FAQSchema = new Schema(
   { timestamps: true }
 );
 
+const NotificationSchema = new Schema(
+  {
+    title: {
+      type: String,
+      required: true,
+    },
+    details: {
+      type: String,
+      required: true,
+    },
+    isRead: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+  },
+  { timestamps: true }
+);
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
@@ -303,6 +322,7 @@ const Order = model("Order", OrderSchema);
 const Appointment = model("Appointment", AppointmentSchema);
 const Contact = model("Contact", ContactSchema);
 const FAQ = model("FAQ", FAQSchema);
+const Notification = model("Notification", NotificationSchema);
 
 export {
   User,
@@ -316,4 +336,5 @@ export {
   Appointment,
   Contact,
   FAQ,
+  Notification,
 };
