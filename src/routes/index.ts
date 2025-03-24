@@ -32,6 +32,11 @@ const registerAdminRoutes = (app: Express) => {
   app.use("/admin/users", authorize(["admin"]), adminRoutes.usersRoutes);
   app.use("/admin/contact", authorize(["admin"]), adminRoutes.contactRoutes);
   app.use("/admin/faq", authorize(["admin"]), adminRoutes.faqRoutes);
+  app.use(
+    "/admin/dashboard",
+    authorize(["admin"]),
+    adminRoutes.dashboardRoutes
+  );
 };
 
 const registerWebhookRoutes = (app: Express) => {

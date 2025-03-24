@@ -1,30 +1,33 @@
 import { model, Schema, Types } from "mongoose";
 
-const UserSchema = new Schema({
-  name: { type: String, required: true },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String },
-  photo_url: { type: String },
-  password_hash: { type: String, required: true },
-  role: {
-    type: String,
-    required: true,
-    default: "user",
-    enum: ["user", "admin"],
+const UserSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String },
+    photo_url: { type: String },
+    password_hash: { type: String, required: true },
+    role: {
+      type: String,
+      required: true,
+      default: "user",
+      enum: ["user", "admin"],
+    },
+    shipping_address: {
+      street_address: { type: String },
+      city: { type: String },
+      state: { type: String },
+      zip_code: { type: String },
+    },
+    account_status: {
+      type: String,
+      required: true,
+      default: "Active",
+      enum: ["Active", "Banned"],
+    },
   },
-  shipping_address: {
-    street_address: { type: String },
-    city: { type: String },
-    state: { type: String },
-    zip_code: { type: String },
-  },
-  account_status: {
-    type: String,
-    required: true,
-    default: "Active",
-    enum: ["Active", "Banned"],
-  },
-});
+  { timestamps: true }
+);
 
 const OTPSchema = new Schema({
   otp: {

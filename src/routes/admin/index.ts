@@ -6,3 +6,4 @@ export { default as ordersRoutes } from "./orders.routes";
 export { default as usersRoutes } from "./users.routes";
 export { default as contactRoutes } from "./contact.routes";
 export { default as faqRoutes } from "./faq.routes";
+export { default as dashboardRoutes } from "./dashboard.routes";
