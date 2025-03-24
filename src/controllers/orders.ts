@@ -1,6 +1,7 @@
 import { AuthenticatedRequest } from "@middleware/auth";
 import { createCheckoutSession } from "@services/stripeService";
 import uploadService from "@services/uploadService";
+import { verifyAccessToken } from "@utils/jwt";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { isObjectIdOrHexString } from "mongoose";
@@ -29,10 +30,15 @@ const custom_or_repair_order = async (req: Request, res: Response) => {
   }
 
   const image_url = await uploadService(image, "image");
-
+  const token = req.headers.authorization?.split(" ")[1];
+  let decoded;
+  if (token) {
+    decoded = verifyAccessToken(token);
+  }
   try {
     await Order.create({
       order_type: type,
+      user: decoded?.id,
       custom_order_details: {
         name,
         email,
@@ -88,11 +94,15 @@ const place_order = async (req: any, res: Response) => {
     res.status(400).json({ message: "One or more product IDs are invalid" });
     return;
   }
-
+  const token = req.headers.authorization?.split(" ")[1];
+  let decoded;
+  if (token) {
+    decoded = verifyAccessToken(token);
+  }
   try {
     const order = await Order.create({
       order_type: "ready-made",
-      user: req?.user?.id,
+      user: decoded?.id,
       ready_made_details: {
         shipping_address,
         city,
