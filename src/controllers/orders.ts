@@ -4,6 +4,7 @@ import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { isObjectIdOrHexString } from "mongoose";
 import { Order, Product } from "src/schema";
+import Stripe from "stripe";
 
 const custom_or_repair_order = async (req: Request, res: Response) => {
   const { type, name, email, phone, address, jewelry_type, description } =
@@ -88,7 +89,7 @@ const place_order = async (req: any, res: Response) => {
   }
 
   try {
-    await Order.create({
+    const order = await Order.create({
       order_type: "ready-made",
       ready_made_details: {
         shipping_address,
@@ -113,7 +114,7 @@ const place_order = async (req: any, res: Response) => {
     }));
 
     const stripe: any = await createCheckoutSession({
-      userId: req?.user?.id || "not_logged_in",
+      userId: order._id.toString(),
       line_items,
     });
 
@@ -227,4 +228,44 @@ const edit_order = async (req: Request, res: Response) => {
   }
 };
 
-export { custom_or_repair_order, place_order, get_orders, edit_order };
+const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
+  const webhook_secret = process.env.STRIPE_WEBHOOK_SECRET;
+  const sig = req.headers["stripe-signature"];
+
+  if (!sig) {
+    res.status(500).send("Missing Stripe signature");
+    return;
+  }
+  if (!webhook_secret) {
+    res.status(500).send("Missing Stripe webhook secret");
+    return;
+  }
+  try {
+    const event = Stripe.webhooks.constructEvent(req.body, sig, webhook_secret);
+    const session = event.data.object as Stripe.Checkout.Session;
+
+    if (event.type === "checkout.session.completed") {
+      await Order.findByIdAndUpdate(session.client_reference_id, {
+        payment_id: session.id,
+        payment_status: "Paid",
+      });
+
+      res.send();
+    } else {
+      console.log(`Unhandled event type ${event.type}`);
+      res.send();
+    }
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(`Webhook Error: ${err}`);
+    return;
+  }
+};
+
+export {
+  custom_or_repair_order,
+  place_order,
+  get_orders,
+  edit_order,
+  stripe_webhook,
+};

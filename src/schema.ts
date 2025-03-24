@@ -219,6 +219,9 @@ const OrderSchema = new Schema(
       type: String,
       default: "Pending",
     },
+    payment_id: {
+      type: String,
+    },
     order_status: {
       type: String,
       default: "Pending",

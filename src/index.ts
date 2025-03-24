@@ -1,7 +1,11 @@
 import { config } from "dotenv";
 import express, { Response } from "express";
 import http from "http";
-import { registerAdminRoutes, registerUserRoutes } from "./routes";
+import {
+  registerAdminRoutes,
+  registerUserRoutes,
+  registerWebhookRoutes,
+} from "./routes";
 import startDB from "./db";
 import logger from "@utils/logger";
 import cors from "cors";
@@ -11,6 +15,7 @@ startDB();
 
 const app = express();
 app.use(cors({ origin: "*" }));
+registerWebhookRoutes(app);
 app.use(express.json());
 app.use(logger);
 registerUserRoutes(app);
@@ -22,6 +27,7 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 app.get("/", (_, res: Response) => {
   res.json({
-    message: "Hello, this is the root route for Cathys Jewellery Shop Backend 🙌"
-  })
+    message:
+      "Hello, this is the root route for Cathys Jewellery Shop Backend 🙌",
+  });
 });
