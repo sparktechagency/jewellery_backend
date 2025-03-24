@@ -1,3 +1,4 @@
+import { AuthenticatedRequest } from "@middleware/auth";
 import { createCheckoutSession } from "@services/stripeService";
 import uploadService from "@services/uploadService";
 import validateRequiredFields from "@utils/validateRequiredFields";
@@ -91,6 +92,7 @@ const place_order = async (req: any, res: Response) => {
   try {
     const order = await Order.create({
       order_type: "ready-made",
+      user: req?.user?.id,
       ready_made_details: {
         shipping_address,
         city,
@@ -262,10 +264,30 @@ const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
+const get_user_orders = async (req: AuthenticatedRequest, res: Response) => {
+  const { type } = req.query;
+  try {
+    const filters =
+      type === "custom"
+        ? { order_type: { $ne: "ready-made" } }
+        : { order_type: "ready-made" };
+
+    const orders = await Order.find({
+      user: req.user?.id,
+      ...filters,
+    });
+    res.json(orders);
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   custom_or_repair_order,
   place_order,
   get_orders,
   edit_order,
   stripe_webhook,
+  get_user_orders,
 };

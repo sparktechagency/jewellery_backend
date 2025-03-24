@@ -164,6 +164,10 @@ const OrderSchema = new Schema(
       required: true,
       enum: ["custom", "repair", "ready-made"],
     },
+    user: {
+      type: Types.ObjectId,
+      ref: "User",
+    },
     custom_order_details: {
       name: {
         type: String,
