@@ -247,5 +247,5 @@ This app allows users to browse and purchase jewelry items, place custom orders,
 - ✅ post /faq
 - ✅ patch /faq 
 - ✅ delete /faq
-- get /dashboard
-- get /notifications
+- ✅ get /dashboard
+- 🚧 get /notifications

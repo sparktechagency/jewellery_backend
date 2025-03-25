@@ -1,3 +1,4 @@
+import { triggerNotification } from "@services/notificationService";
 import { sendOTP, verifyOTP } from "@services/otpService";
 import {
   generateAccessToken,
@@ -32,7 +33,7 @@ const signup = async (req: Request, res: Response) => {
   await User.create({ name, email, password_hash });
 
   await sendOTP(email, "signup");
-
+  triggerNotification("SIGNUP", { email });
   res.json({ message: "OTP sent to email" });
 };
 const verify_otp = async (req: Request, res: Response) => {

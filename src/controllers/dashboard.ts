@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Order, Product, User } from "src/schema";
+import { Notification, Order, Product, User } from "src/schema";
 
 const getIncomeOverview = async (income_year: number) => {
   const startDate = new Date(income_year, 0, 1); // Jan 1st of the year
@@ -114,8 +114,12 @@ const dashboard = async (req: Request, res: Response) => {
   }, 0);
 
   const total_items = await Product.countDocuments();
+
+  const notification_count = await Notification.countDocuments({
+    isRead: false,
+  });
   const response = {
-    notification_count: 0,
+    notification_count,
     total_users,
     orders_completed: orders_completed.length,
     total_income,
@@ -127,7 +131,15 @@ const dashboard = async (req: Request, res: Response) => {
 };
 
 const notifications = async (req: Request, res: Response) => {
-  res.json({ message: "Hello" });
+  try {
+    const notifications = await Notification.find();
+    res.json(notifications);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  } finally {
+    await Notification.updateMany({}, { isRead: true });
+  }
 };
 
 export { dashboard, notifications };

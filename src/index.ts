@@ -9,6 +9,7 @@ import {
 import startDB from "./db";
 import logger from "@utils/logger";
 import cors from "cors";
+import "@services/notificationService"
 
 config();
 startDB();

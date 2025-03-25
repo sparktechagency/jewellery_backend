@@ -1,4 +1,5 @@
 import { AuthenticatedRequest } from "@middleware/auth";
+import { triggerNotification } from "@services/notificationService";
 import { createCheckoutSession } from "@services/stripeService";
 import uploadService from "@services/uploadService";
 import { verifyAccessToken } from "@utils/jwt";
@@ -49,6 +50,11 @@ const custom_or_repair_order = async (req: Request, res: Response) => {
         image_url,
       },
     });
+    if (type === "custom") {
+      triggerNotification("NEW_CUSTOM_ORDER", {});
+    } else if (type === "repair") {
+      triggerNotification("NEW_REPAIR_ORDER", {});
+    }
     res.json({ message: "Order placed successfully" });
   } catch (error) {
     console.log(error);
@@ -130,6 +136,7 @@ const place_order = async (req: any, res: Response) => {
       line_items,
     });
 
+    triggerNotification("NEW_ORDER", {});
     res.json({ message: "Order created successfully", stripe_url: stripe.url });
   } catch (error) {
     console.log(error);
@@ -261,7 +268,7 @@ const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
         payment_id: session.id,
         payment_status: "Paid",
       });
-
+      triggerNotification("PAYMENT_CONFIRMED", {});
       res.send();
     } else {
       console.log(`Unhandled event type ${event.type}`);
@@ -285,6 +292,9 @@ const get_user_orders = async (req: AuthenticatedRequest, res: Response) => {
     const orders = await Order.find({
       user: req.user?.id,
       ...filters,
+    }).populate({
+      path: "ready_made_details.products.product_id",
+      model: "Product",
     });
     res.json(orders);
   } catch (error) {
