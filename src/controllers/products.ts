@@ -3,7 +3,7 @@ import uploadService from "@services/uploadService";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { isObjectIdOrHexString } from "mongoose";
-import { Category, Favorite, Product, Review } from "src/schema";
+import { Category, Favorite, Order, Product, Review } from "src/schema";
 
 const add_product = async (req: Request, res: Response) => {
   const {
@@ -480,6 +480,45 @@ const get_products = async (req: Request, res: Response) => {
   }
 };
 
+const get_popular_products = async (req: Request, res: Response) => {
+  try {
+    const topOrderedProducts = await Order.aggregate([
+      { $match: { order_type: "ready-made" } },
+      { $unwind: "$ready_made_details.products" },
+      {
+        $group: {
+          _id: "$ready_made_details.products.product_id",
+          orderCount: { $sum: "$ready_made_details.products.quantity" },
+        },
+      },
+      { $sort: { orderCount: -1 } },
+      { $limit: 10 },
+    ]);
+
+    const orderedProductIds = topOrderedProducts.map((p) => p._id);
+
+    let products = await Product.find({ _id: { $in: orderedProductIds } });
+
+    // If less than 10, fetch additional recent/random products
+    if (products.length < 10) {
+      const needed = 10 - products.length;
+      const additionalProducts = await Product.find({
+        _id: { $nin: orderedProductIds },
+      })
+        .sort({ createdAt: -1 }) // Can change to .aggregate([{ $sample: { size: needed } }]) for random
+        .limit(needed);
+      console.log({additionalProducts});
+      
+      products = [...products, ...additionalProducts];
+    }
+
+    res.status(200).json(products.slice(0, 10));
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
 export {
   add_product,
   edit_product,
@@ -490,4 +529,5 @@ export {
   add_remove_favorites,
   get_favorites,
   get_products,
+  get_popular_products,
 };
