@@ -72,10 +72,10 @@ const get_categories = async (req: Request, res: Response) => {
     selection = { __v: 0, details: 0 };
   }
 
-  const categories = await Category.find(
-    { subcategory_of: { $exists: false } },
-    selection
-  );
+  const categories = await Category.find({
+    subcategory_of: { $exists: false },
+    selection,
+  });
 
   res.json(categories);
 };

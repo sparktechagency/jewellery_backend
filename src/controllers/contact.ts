@@ -40,7 +40,7 @@ const get_contact_us = async (req: Request, res: Response) => {
     const totalContacts = await Contact.countDocuments();
     const totalPages = Math.ceil(totalContacts / pageSize);
 
-    const contacts = await Contact.find({}, { __v: 0 })
+    const contacts = await Contact.find({})
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
 
