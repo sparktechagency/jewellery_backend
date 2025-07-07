@@ -7,6 +7,7 @@ const UserSchema = new Schema(
     phone: { type: String },
     photo_url: { type: String },
     password_hash: { type: String, required: true },
+    emailVerified: { type: Boolean, default: false },
     role: {
       type: String,
       required: true,

@@ -29,6 +29,6 @@ server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 app.get("/", (_, res: Response) => {
   res.json({
     message:
-      "Hello, this is the root route for Cathys Jewellery Shop Backend 🙌",
+      "Hello, this is the root route for Cathys Jewelry Shop Backend 🙌",
   });
 });

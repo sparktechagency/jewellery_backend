@@ -33,6 +33,7 @@ const signup = async (req: Request, res: Response) => {
   await User.create({ name, email, password_hash });
 
   await sendOTP(email, "signup");
+
   triggerNotification("SIGNUP", { email });
   res.json({ message: "OTP sent to email" });
 };
@@ -76,7 +77,8 @@ const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email, emailVerified: true });
+
   if (!user) {
     res.status(400).json({ message: "User not found" });
     return;
@@ -97,8 +99,17 @@ const login = async (req: Request, res: Response) => {
 
   res
     .status(200)
-    .json({ message: "Login successful", accessToken, refreshToken });
+    .json({
+      message: "Login successful",
+      accessToken,
+      refreshToken,
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
 };
+
 const forgot_password = async (req: Request, res: Response) => {
   const { email } = req?.body || {};
 
