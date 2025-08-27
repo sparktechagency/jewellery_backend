@@ -158,7 +158,7 @@ const place_order = async (req: any, res: Response) => {
 };
 
 const get_orders = async (req: Request, res: Response) => {
-  const { type, page = 1, limit = 10 } = req.query;
+  const { type, page = 1, limit = 10, searchTerm } = req.query;
 
   const error = validateRequiredFields({ type });
 
@@ -168,27 +168,121 @@ const get_orders = async (req: Request, res: Response) => {
   }
 
   try {
-    const filters =
-      type === "ready-made"
-        ? { order_type: "ready-made" }
-        : { order_type: { $ne: "ready-made" } };
+    // Only support "ready-made" or "custom" types
+    let filters: any = {};
+    if (type === "ready-made") {
+      filters = { order_type: "ready-made" };
+    } else if (type === "custom/ready-made") {
+      filters = { order_type: { $ne: "ready-made" } };
+    } else {
+      res.status(400).json({ message: "Invalid type. Use 'ready-made' or 'custom'." });
+      return;
+    }
+
+    // Add searchTerm filter
+    let searchFilter = {};
+    if (searchTerm && typeof searchTerm === "string" && searchTerm.trim() !== "") {
+      const regex = new RegExp(searchTerm, "i");
+      if (filters.order_type === "ready-made") {
+        searchFilter = {
+          $or: [
+            { "ready_made_details.shipping_address": regex },
+            { "ready_made_details.city": regex },
+            { "ready_made_details.state": regex },
+            { "ready_made_details.zip": regex },
+          ],
+        };
+      } else {
+        searchFilter = {
+          $or: [
+            { "custom_order_details.name": regex },
+            { "custom_order_details.email": regex },
+            { "custom_order_details.phone": regex },
+            { "custom_order_details.address": regex },
+            { "custom_order_details.jewelry_type": regex },
+            { "custom_order_details.description": regex },
+          ],
+        };
+      }
+    }
 
     const pageNumber = parseInt(page as string) || 1;
     const pageSize = parseInt(limit as string) || 10;
-    const totalContacts = await Order.countDocuments(filters);
+    const totalContacts = await Order.countDocuments({ ...filters, ...searchFilter });
     const totalPages = Math.ceil(totalContacts / pageSize);
 
-    const orders = await Order.find(filters, {
-      custom_order_details: 0,
-      ready_made_details: 0,
-      __v: 0,
-    })
-      .populate({
-        path: "ready_made_details.products.product_id",
-        model: "Product",
-      })
+    const ordersRaw = await Order.find({ ...filters, ...searchFilter })
+      .populate([
+        {
+          path: "ready_made_details.products.product_id",
+          model: "Product",
+        },
+        {
+          path: "user",
+          select: "name email phone",
+        },
+      ])
       .skip((pageNumber - 1) * pageSize)
       .limit(pageSize);
+
+    // Always return all possible fields for both types
+    const orders = ordersRaw.map((order: any) => {
+      const base = {
+        id: order._id,
+        order_type: order.order_type,
+        order_status: order.order_status,
+        payment_status: order.payment_status,
+        createdAt: order.createdAt,
+        updatedAt: order.updatedAt,
+      };
+
+      // Ready-made fields
+      const readyMadeFields = {
+        shipping_address: order.ready_made_details?.shipping_address,
+        city: order.ready_made_details?.city,
+        state: order.ready_made_details?.state,
+        zip: order.ready_made_details?.zip,
+        orderDate: order.createdAt,
+        totalPrice: order.ready_made_details?.products
+          ? order.ready_made_details.products.reduce(
+              (total: number, p: any) =>
+                total +
+                (p.product_id?.discount_price
+                  ? p.product_id?.discount_price * p.quantity
+                  : p.product_id?.price * p.quantity),
+              0
+            ) + 5 // Adding flat $5 shipping charge
+          : undefined,
+        customerName: order.user?.name,
+        customerEmail: order.user?.email,
+        customerPhone: order.user?.phone,
+        products: (order.ready_made_details?.products || []).map((p: any) => ({
+          product_id: p.product_id?._id || p.product_id,
+          product_name: p.product_id?.name,
+          quantity: p.quantity,
+          price: p.product_id?.price,
+          discount_price: p.product_id?.discount_price,
+        })),
+      };
+
+      // Custom/repair fields
+      const customFields = {
+        name: order.custom_order_details?.name,
+        email: order.custom_order_details?.email,
+        phone: order.custom_order_details?.phone,
+        address: order.custom_order_details?.address,
+        jewelry_type: order.custom_order_details?.jewelry_type,
+        description: order.custom_order_details?.description,
+        image_url: order.custom_order_details?.image_url,
+        custom_order_price: order.custom_order_price,
+      };
+
+      return {
+        ...base,
+        ...readyMadeFields,
+        ...customFields,
+      };
+    });
 
     const pagination = {
       totalContacts,

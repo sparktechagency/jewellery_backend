@@ -84,6 +84,12 @@ const change_password = async (req: AuthenticatedRequest, res: Response) => {
     res.status(400).json({ message: "Invalid password" });
     return;
   }
+  if (current_password === new_password) {
+    res
+      .status(400)
+      .json({ message: "New password must be different from current one" });
+    return;
+  }
 
   const password_hash = await plainPasswordToHash(new_password);
 

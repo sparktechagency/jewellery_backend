@@ -7,6 +7,7 @@ const getIncomeOverview = async (income_year: number) => {
 
   const orders_completed = await Order.find({
     order_status: "Completed",
+    payment_status: "Paid",
     createdAt: { $gte: startDate, $lt: endDate },
   }).populate({
     path: "ready_made_details.products.product_id",
@@ -85,6 +86,7 @@ const dashboard = async (req: Request, res: Response) => {
 
   const orders_completed = await Order.find({
     order_status: "Completed",
+    payment_status: "Paid",
   }).populate({
     path: "ready_made_details.products.product_id",
     model: "Product",
