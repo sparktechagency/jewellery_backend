@@ -37,6 +37,11 @@ const registerAdminRoutes = (app: Express) => {
     authorize(["admin"]),
     adminRoutes.dashboardRoutes
   );
+  app.use(
+    "/admin/manage-contact",
+    authorize(["admin"]),
+    adminRoutes.manageContactRoutes
+  );
 };
 
 const registerWebhookRoutes = (app: Express) => {

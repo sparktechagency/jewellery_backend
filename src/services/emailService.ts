@@ -1,37 +1,27 @@
-import { config } from "dotenv";
-import nodemailer from "nodemailer";
+import nodemailer from 'nodemailer';
 
-config();
+const emailSender = async (subject: string, email: string, html: string) => {
+  const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 465,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER ,
+      pass: process.env.EMAIL_PASS ,
+    },
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
 
-interface EmailOptions {
-  to: string;
-  subject: string;
-  text?: string;
-  html?: string;
-}
+  const info = await transporter.sendMail({
+    from: '"Jewellery" <efazkh@gmail.com>',
+    to: email,
+    subject: `${subject}`,
+    html,
+  });
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-});
-
-export const sendEmail = async ({ to, subject, text, html }: EmailOptions) => {
-  try {
-    const info = await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      text,
-      html,
-    });
-
-    console.log(`Email sent: ${info.messageId}`);
-    return { success: true, messageId: info.messageId };
-  } catch (error) {
-    console.error("Error sending email:", error);
-    return { success: false, error };
-  }
+  //  console.log("Message sent: %s", info.messageId);
 };
+
+export default emailSender;

@@ -1,4 +1,3 @@
-import { sendEmail } from "@services/emailService";
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
 import { Contact } from "src/schema";

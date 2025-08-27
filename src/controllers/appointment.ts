@@ -19,6 +19,12 @@ const book_an_appointment = async (req: Request, res: Response) => {
     return;
   }
 
+  const now = new Date();
+  if (new Date(start) < now) {
+    res.status(400).json({ message: "Appointment cannot be placed in the past" });
+    return;
+  }
+
   if (new Date(start) >= new Date(end)) {
     res.status(400).json({ message: "End date must be later than start date" });
     return;

@@ -13,7 +13,10 @@ const get_users = async (req: Request, res: Response) => {
     .skip((pageNumber - 1) * pageSize)
     .limit(pageSize);
 
-  const totalUsers = await User.countDocuments();
+  const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
+
+  // Sort users by createdAt in descending order
+  users.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   const totalPages = Math.ceil(totalUsers / pageSize);
   const pagination = {
     totalUsers,

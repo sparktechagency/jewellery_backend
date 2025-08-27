@@ -120,16 +120,29 @@ const place_order = async (req: any, res: Response) => {
 
     const line_items = productsFromDB.map((product) => ({
       price_data: {
-        currency: "usd",
-        product_data: {
-          name: product.name,
-        },
-        unit_amount:
-          (product.discount_price ? product.discount_price : product.price) *
-          100,
+      currency: "usd",
+      product_data: {
+        name: product.name,
+      },
+      unit_amount:
+        (product.discount_price ? product.discount_price : product.price) *
+        100,
       },
       quantity: products.find((p) => p.id === product.id).quantity,
     }));
+
+    // Add shipping charge as a separate line item
+    const SHIPPING_CHARGE = 500; // $5.00 in cents, adjust as needed
+    line_items.push({
+      price_data: {
+      currency: "usd",
+      product_data: {
+        name: "Shipping Charge",
+      },
+      unit_amount: SHIPPING_CHARGE,
+      },
+      quantity: 1,
+    });
 
     const stripe: any = await createCheckoutSession({
       userId: order._id.toString(),

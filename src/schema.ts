@@ -1,3 +1,4 @@
+import { version } from "os";
 import { model, Schema, Types } from "mongoose";
 
 const UserSchema = new Schema(
@@ -27,7 +28,7 @@ const UserSchema = new Schema(
       enum: ["Active", "Banned"],
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 const OTPSchema = new Schema({
@@ -47,23 +48,26 @@ const OTPSchema = new Schema({
   },
 });
 
-const CategorySchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const CategorySchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    details: {
+      type: String,
+    },
+    img_url: {
+      type: String,
+      required: true,
+    },
+    subcategory_of: {
+      type: Types.ObjectId,
+      ref: "Category",
+    },
   },
-  details: {
-    type: String,
-  },
-  img_url: {
-    type: String,
-    required: true,
-  },
-  subcategory_of: {
-    type: Types.ObjectId,
-    ref: "Category",
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
 const ReviewSchema = new Schema(
   {
@@ -89,74 +93,83 @@ const ReviewSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
-const ProductSchema = new Schema({
-  name: {
-    type: String,
-    required: true,
+const ProductSchema = new Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    category: {
+      type: Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    availability: {
+      type: String,
+      enum: ["in_stock", "stock_out", "upcoming"],
+      required: true,
+    },
+    price: {
+      type: Number,
+      required: true,
+    },
+    discount_price: {
+      type: Number,
+    },
+    description: {
+      type: String,
+    },
+    details: {
+      type: String,
+    },
+    colors: {
+      type: [String],
+    },
+    sizes: {
+      type: [String],
+    },
+    ratings: {
+      type: [Number],
+    },
+    image_urls: {
+      type: [String],
+    },
   },
-  category: {
-    type: Types.ObjectId,
-    ref: "Category",
-    required: true,
-  },
-  availability: {
-    type: String,
-    enum: ["in_stock", "stock_out", "upcoming"],
-    required: true,
-  },
-  price: {
-    type: Number,
-    required: true,
-  },
-  discount_price: {
-    type: Number,
-  },
-  description: {
-    type: String,
-  },
-  details: {
-    type: String,
-  },
-  colors: {
-    type: [String],
-  },
-  sizes: {
-    type: [String],
-  },
-  ratings: {
-    type: [Number],
-  },
-  image_urls: {
-    type: [String],
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
-const FavoriteSchema = new Schema({
-  user: {
-    type: Types.ObjectId,
-    ref: "User",
-    required: true,
+const FavoriteSchema = new Schema(
+  {
+    user: {
+      type: Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    product: {
+      type: Types.ObjectId,
+      ref: "Product",
+      required: true,
+    },
   },
-  product: {
-    type: Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
-const InfoSchema = new Schema({
-  page: {
-    type: String,
-    required: true,
+const InfoSchema = new Schema(
+  {
+    page: {
+      type: String,
+      required: true,
+    },
+    content: {
+      type: String,
+      required: true,
+    },
   },
-  content: {
-    type: String,
-    required: true,
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
 const OrderSchema = new Schema(
   {
@@ -238,34 +251,37 @@ const OrderSchema = new Schema(
       type: Number,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
-const AppointmentSchema = new Schema({
-  start: {
-    type: Date,
-    required: true,
+const AppointmentSchema = new Schema(
+  {
+    start: {
+      type: Date,
+      required: true,
+    },
+    end: {
+      type: Date,
+      required: true,
+    },
+    name: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    phone: {
+      type: String,
+      required: true,
+    },
+    notes: {
+      type: String,
+    },
   },
-  end: {
-    type: Date,
-    required: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-  },
-  phone: {
-    type: String,
-    required: true,
-  },
-  notes: {
-    type: String,
-  },
-});
+  { timestamps: true, versionKey: false }
+);
 
 const ContactSchema = new Schema(
   {
@@ -286,7 +302,7 @@ const ContactSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 const FAQSchema = new Schema(
@@ -300,7 +316,7 @@ const FAQSchema = new Schema(
       required: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
 );
 
 const NotificationSchema = new Schema(
@@ -319,7 +335,29 @@ const NotificationSchema = new Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true, versionKey: false }
+);
+
+const ContactDetailSchema = new Schema(
+  {
+    description: {
+      type: String,
+      required: true,
+    },
+    contactNumber: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
+    address: {
+      type: String,
+      required: true,
+    },
+  },
+  { timestamps: true, versionKey: false }
 );
 
 const User = model("User", UserSchema);
@@ -334,6 +372,7 @@ const Appointment = model("Appointment", AppointmentSchema);
 const Contact = model("Contact", ContactSchema);
 const FAQ = model("FAQ", FAQSchema);
 const Notification = model("Notification", NotificationSchema);
+const ManageContact = model("Manage-Contact", ContactDetailSchema);
 
 export {
   User,
@@ -348,4 +387,5 @@ export {
   Contact,
   FAQ,
   Notification,
+  ManageContact,
 };

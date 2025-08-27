@@ -30,9 +30,10 @@ const signup = async (req: Request, res: Response) => {
 
   const password_hash = await plainPasswordToHash(password);
 
-  await User.create({ name, email, password_hash });
+  const user = await User.create({ name, email, password_hash });
 
-  await sendOTP(email, "signup");
+
+  await sendOTP(user.name, email, "signup");
 
   triggerNotification("SIGNUP", { email });
   res.json({ message: "OTP sent to email" });
@@ -77,12 +78,18 @@ const login = async (req: Request, res: Response) => {
     return;
   }
 
-  const user = await User.findOne({ email, emailVerified: true });
+  const user = await User.findOne({ email, emailVerified: true});
 
   if (!user) {
     res.status(400).json({ message: "User not found" });
     return;
   }
+  if( user.account_status === "Banned"){
+    res.status(403).json({ message: "Your account has been banned. Please contact support." }
+    );
+    return;
+  }
+    
 
   const isPasswordCorrect = await comparePassword(password, user.password_hash);
   if (!isPasswordCorrect) {
@@ -125,7 +132,7 @@ const forgot_password = async (req: Request, res: Response) => {
     return;
   }
 
-  await sendOTP(email, "forgot_password");
+  await sendOTP(user.name, email, "forgot_password");
 
   res.status(200).json({ message: "OTP sent to email" });
 };
@@ -194,7 +201,7 @@ const resend = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    await sendOTP(email, type);
+    await sendOTP(existingUser.name, email, type);
 
     const response: { success: boolean; message: string; otp?: string } = {
       success: true,
