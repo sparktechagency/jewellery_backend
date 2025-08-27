@@ -120,13 +120,13 @@ const place_order = async (req: any, res: Response) => {
 
     const line_items = productsFromDB.map((product) => ({
       price_data: {
-      currency: "usd",
-      product_data: {
-        name: product.name,
-      },
-      unit_amount:
-        (product.discount_price ? product.discount_price : product.price) *
-        100,
+        currency: "usd",
+        product_data: {
+          name: product.name,
+        },
+        unit_amount:
+          (product.discount_price ? product.discount_price : product.price) *
+          100,
       },
       quantity: products.find((p) => p.id === product.id).quantity,
     }));
@@ -135,18 +135,18 @@ const place_order = async (req: any, res: Response) => {
     const SHIPPING_CHARGE = 500; // $5.00 in cents, adjust as needed
     line_items.push({
       price_data: {
-      currency: "usd",
-      product_data: {
-        name: "Shipping Charge",
-      },
-      unit_amount: SHIPPING_CHARGE,
+        currency: "usd",
+        product_data: {
+          name: "Shipping Charge",
+        },
+        unit_amount: SHIPPING_CHARGE,
       },
       quantity: 1,
     });
 
     const stripe: any = await createCheckoutSession({
       userId: order._id.toString(),
-      line_items,
+      line_items
     });
 
     triggerNotification("NEW_ORDER", {});
@@ -175,30 +175,43 @@ const get_orders = async (req: Request, res: Response) => {
     } else if (type === "custom/ready-made") {
       filters = { order_type: { $ne: "ready-made" } };
     } else {
-      res.status(400).json({ message: "Invalid type. Use 'ready-made' or 'custom'." });
+      res
+        .status(400)
+        .json({ message: "Invalid type. Use 'ready-made' or 'custom/ready-made'." });
       return;
     }
 
     // Add searchTerm filter
     let searchFilter = {};
-    if (searchTerm && typeof searchTerm === "string" && searchTerm.trim() !== "") {
+    if (
+      searchTerm &&
+      typeof searchTerm === "string" &&
+      searchTerm.trim() !== ""
+    ) {
       const regex = new RegExp(searchTerm, "i");
-      if (filters.order_type === "ready-made") {
+      if (type === "ready-made") {
         searchFilter = {
           $or: [
+            { "ready_made_details.products.product_id.name": regex },
+            { "ready_made_details.products.product_id._id": regex },
+            { "user.name": regex },
+            { "user.email": regex },
+            { "user.phone": regex },
             { "ready_made_details.shipping_address": regex },
             { "ready_made_details.city": regex },
             { "ready_made_details.state": regex },
             { "ready_made_details.zip": regex },
           ],
         };
-      } else {
+      } else if (type === "custom/ready-made") {
+        console.log(searchTerm);
         searchFilter = {
           $or: [
             { "custom_order_details.name": regex },
             { "custom_order_details.email": regex },
             { "custom_order_details.phone": regex },
             { "custom_order_details.address": regex },
+            { "custom_order_details.city": regex },
             { "custom_order_details.jewelry_type": regex },
             { "custom_order_details.description": regex },
           ],
@@ -208,7 +221,10 @@ const get_orders = async (req: Request, res: Response) => {
 
     const pageNumber = parseInt(page as string) || 1;
     const pageSize = parseInt(limit as string) || 10;
-    const totalContacts = await Order.countDocuments({ ...filters, ...searchFilter });
+    const totalContacts = await Order.countDocuments({
+      ...filters,
+      ...searchFilter,
+    });
     const totalPages = Math.ceil(totalContacts / pageSize);
 
     const ordersRaw = await Order.find({ ...filters, ...searchFilter })

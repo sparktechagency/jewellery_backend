@@ -37,8 +37,8 @@ export const createCheckoutSession = async ({
       //     },
       //   ],
       mode: "payment",
-      success_url: "http://localhost:3000/success.html",
-      cancel_url: "http://localhost:3000/cancel.html",
+      success_url: process.env.PAYMENT_SUCCESS_URL || "http://localhost:3000/success.html",
+      cancel_url: process.env.PAYMENT_CANCEL_URL || "http://localhost:3000/cancel.html",
     });
 
     return session;
