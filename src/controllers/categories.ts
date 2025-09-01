@@ -64,7 +64,11 @@ const add_category = async (req: Request, res: Response) => {
 const get_categories = async (req: Request, res: Response) => {
   const { type }: { type?: "nav" | "search" } = req?.query || {};
 
-  let selection;
+  interface CategorySelection {
+    [key: string]: 0 | 1;
+  }
+
+  let selection: CategorySelection | undefined;
 
   if (type === "nav") {
     selection = { __v: 0, details: 0, img_url: 0 };
@@ -72,12 +76,28 @@ const get_categories = async (req: Request, res: Response) => {
     selection = { __v: 0, details: 0 };
   }
 
-  const categories = await Category.find({
-    subcategory_of: { $exists: false },
-    selection,
-  });
+  // Fetch all main categories
+  const categories = await Category.find(
+    { subcategory_of: { $exists: false } },
+    selection
+  );
 
-  res.json(categories);
+  // For each main category, fetch its subcategories
+  // const categoriesWithSub = await Promise.all(
+  //   categories.map(async (category) => {
+  //     const subcategories = await Category.find(
+  //       { subcategory_of: category._id },
+  //       selection
+  //     );
+  //     return {
+  //       ...category.toObject(),
+  //       subcategories,
+  //     };
+  //   })
+  // );
+
+  // res.json({ categories: categoriesWithSub });
+  res.json(categories );
 };
 
 const get_category = async (req: Request, res: Response) => {

@@ -83,6 +83,7 @@ const edit_product = async (req: Request, res: Response) => {
     id,
     name,
     category,
+    // subcategory,
     availability,
     price,
     discount_price,
@@ -115,6 +116,21 @@ const edit_product = async (req: Request, res: Response) => {
     }
   }
 
+  // if (subcategory) {
+  //   try {
+  //     const subcat = await Category.findById(subcategory);
+  //     if (subcat?.subcategory_of?.toString() !== category) {
+  //       res
+  //         .status(400).json({ message: "Invalid subcategory for the given category" });
+  //       return;
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //     res.status(400).json({ message: "Invalid subcategory id" });
+  //     return;
+  //   }
+  // }
+
   if (
     availability &&
     !["in_stock", "stock_out", "upcoming"].includes(availability)
@@ -141,6 +157,7 @@ const edit_product = async (req: Request, res: Response) => {
     const updatePayload = {
       ...(name && { name }),
       ...(category && { category }),
+      // ...(subcategory && { subcategory }),
       ...(availability && { availability }),
       ...(price && { price }),
       ...(discount_price && { discount_price }),
@@ -395,6 +412,7 @@ const get_products = async (req: Request, res: Response) => {
     rating,
     sort,
     category,
+    subcategory,
     page,
     limit,
   } = req.query || {};
@@ -404,8 +422,9 @@ const get_products = async (req: Request, res: Response) => {
     const pageSize = parseInt(limit as string) || 10;
     const skip = (pageNumber - 1) * pageSize;
 
-    const filters = {
+    const filters: any = {
       ...(category && { category }),
+      ...(subcategory && { subcategory }),
       ...(query && { name: { $regex: query, $options: "i" } }),
       ...(price_min && { price: { $gte: Number(price_min) } }),
       ...(price_max && { price: { $lte: Number(price_max) } }),
@@ -437,12 +456,16 @@ const get_products = async (req: Request, res: Response) => {
       ...filters,
       ratings: { $ne: [] },
     })
-      .populate({
-        path: "category",
-        populate: {
-          path: "subcategory_of",
+      .populate([
+        {
+          path: "category",
+          populate: { path: "subcategory_of" },
         },
-      })
+        // {
+        //   path: "subcategory",
+        //   populate: { path: "subcategory_of" },
+        // },
+      ])
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize);
@@ -451,12 +474,16 @@ const get_products = async (req: Request, res: Response) => {
       ...filters,
       ratings: [],
     })
-      .populate({
-        path: "category",
-        populate: {
-          path: "subcategory_of",
+      .populate([
+        {
+          path: "category",
+          populate: { path: "subcategory_of" },
         },
-      })
+        // {
+        //   path: "subcategory",
+        //   populate: { path: "subcategory_of" },
+        // },
+      ])
       .sort(sortOption)
       .skip(skip)
       .limit(pageSize);

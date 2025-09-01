@@ -146,7 +146,7 @@ const place_order = async (req: any, res: Response) => {
 
     const stripe: any = await createCheckoutSession({
       userId: order._id.toString(),
-      line_items
+      line_items,
     });
 
     triggerNotification("NEW_ORDER", {});
@@ -177,7 +177,9 @@ const get_orders = async (req: Request, res: Response) => {
     } else {
       res
         .status(400)
-        .json({ message: "Invalid type. Use 'ready-made' or 'custom/ready-made'." });
+        .json({
+          message: "Invalid type. Use 'ready-made' or 'custom/ready-made'.",
+        });
       return;
     }
 
@@ -269,6 +271,7 @@ const get_orders = async (req: Request, res: Response) => {
               0
             ) + 5 // Adding flat $5 shipping charge
           : undefined,
+        shippingPrice: 5,
         customerName: order.user?.name,
         customerEmail: order.user?.email,
         customerPhone: order.user?.phone,
@@ -276,8 +279,15 @@ const get_orders = async (req: Request, res: Response) => {
           product_id: p.product_id?._id || p.product_id,
           product_name: p.product_id?.name,
           quantity: p.quantity,
-          price: p.product_id?.price,
-          discount_price: p.product_id?.discount_price,
+          price:
+            p.product_id?.discount_price != null
+              ? p.product_id.discount_price * p.quantity
+              : p.product_id?.price * p.quantity,
+          // unit_price: p.product_id?.discount_price
+          //   ? p.product_id?.discount_price
+
+          productColor: p.color,
+          productSize: p.size,
         })),
       };
 
