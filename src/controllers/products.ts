@@ -406,6 +406,7 @@ const get_favorites = async (req: AuthenticatedRequest, res: Response) => {
 const get_products = async (req: Request, res: Response) => {
   const {
     query,
+    searchTerm,
     price_min,
     price_max,
     availability,
@@ -422,10 +423,25 @@ const get_products = async (req: Request, res: Response) => {
     const pageSize = parseInt(limit as string) || 10;
     const skip = (pageNumber - 1) * pageSize;
 
+    // Combine query and searchTerm for searching product names/descriptions
+    const searchFilter =
+      (query || searchTerm)
+        ? {
+            $or: [
+              ...(query ? [{ name: { $regex: query, $options: "i" } }] : []),
+              ...(searchTerm ? [
+                { name: { $regex: searchTerm, $options: "i" } },
+                {details: { $regex: searchTerm, $options: "i" } },
+                { description: { $regex: searchTerm, $options: "i" } },
+              ] : []),
+            ],
+          }
+        : {};
+
     const filters: any = {
       ...(category && { category }),
       ...(subcategory && { subcategory }),
-      ...(query && { name: { $regex: query, $options: "i" } }),
+      ...searchFilter,
       ...(price_min && { price: { $gte: Number(price_min) } }),
       ...(price_max && { price: { $lte: Number(price_max) } }),
       ...(price_min &&
