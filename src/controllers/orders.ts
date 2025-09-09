@@ -429,7 +429,32 @@ const get_user_orders = async (req: AuthenticatedRequest, res: Response) => {
       path: "ready_made_details.products.product_id",
       model: "Product",
     });
-    res.json(orders);
+
+    const ordersWithTotal = orders.map((order: any) => {
+      let totalPrice = 0;
+      if (order.order_type === "ready-made" && order.ready_made_details) {
+        totalPrice =
+          order.ready_made_details.products.reduce(
+            (orderSum: number, p: any) =>
+              orderSum +
+              (p.product_id?.discount_price
+                ? p.product_id?.discount_price * p.quantity
+                : p.product_id?.price * p.quantity),
+            0
+          ) + 5; // Adding flat $5 shipping charge
+      } else if (
+        order.order_type !== "ready-made" &&
+        order.custom_order_price
+      ) {
+        totalPrice = order.custom_order_price;
+      }
+      return {
+        ...order.toObject(),
+        totalPrice,
+      };
+    });
+
+    res.json(ordersWithTotal);
   } catch (error) {
     console.log(error);
     res.status(400).json({ message: "Internal Server Error" });

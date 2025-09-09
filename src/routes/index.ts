@@ -18,6 +18,10 @@ const registerUserRoutes = (app: Express) => {
     "/contact-details",
     adminRoutes.manageContactRoutes
   );
+  app.use(
+    "/social-details",
+    adminRoutes.manageSocialsRoutes
+  );
 };
 const registerAdminRoutes = (app: Express) => {
   app.use(
@@ -45,6 +49,11 @@ const registerAdminRoutes = (app: Express) => {
     "/admin/manage-contact",
     authorize(["admin"]),
     adminRoutes.manageContactRoutes
+  );
+  app.use(
+    "/admin/manage-socials",
+    authorize(["admin"]),
+    adminRoutes.manageSocialsRoutes
   );
 };
 

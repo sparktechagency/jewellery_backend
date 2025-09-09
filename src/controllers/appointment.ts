@@ -1,69 +1,144 @@
 import validateRequiredFields from "@utils/validateRequiredFields";
 import { Request, Response } from "express";
+import { DateTime } from "luxon";
 import { Appointment } from "src/schema";
 
-const book_an_appointment = async (req: Request, res: Response) => {
-  const { start, end, name, email, phone, notes } = req.body || {};
 
-  const error = validateRequiredFields({
-    start,
-    end,
-    name,
-    email,
-    phone,
-    notes,
-  });
+// const book_an_appointment1 = async (req: Request, res: Response) => {
+//   const { start, end, name, email, phone, notes } = req.body || {};
 
-  if (error) {
-    res.status(400).json({ message: error });
-    return;
-  }
+//   const error = validateRequiredFields({
+//     start,
+//     end,
+//     name,
+//     email,
+//     phone,
+//     notes,
+//   });
 
-  const now = new Date();
-  if (new Date(start) < now) {
-    res.status(400).json({ message: "Appointment cannot be placed in the past" });
-    return;
-  }
+//   if (error) {
+//     res.status(400).json({ message: error });
+//     return;
+//   }
 
-  if (new Date(start) >= new Date(end)) {
-    res.status(400).json({ message: "End date must be later than start date" });
-    return;
-  }
+//   const now = new Date();
+//   if (new Date(start) < now) {
+//     res.status(400).json({ message: "Appointment cannot be placed in the past" });
+//     return;
+//   }
 
-  const existingAppointment = await Appointment.findOne({
-    start: { $lt: end },
-    end: { $gt: start },
-  });
-  const officeHoursStart = new Date(start);
-  const officeHoursEnd = new Date(end);
+// console.log(new Date(start), new Date(end));
 
-  // Assuming office hours are from 9 AM to 5 PM
-  const officeStartHour = 9;
-  const officeEndHour = 17;
+//   if (new Date(start) >= new Date(end)) {
+//     res.status(400).json({ message: "End date must be later than start date" });
+//     return;
+//   }
 
-  if (
-    officeHoursStart.getHours() < officeStartHour ||
-    officeHoursEnd.getHours() >= officeEndHour
-  ) {
-    res
-      .status(400)
-      .json({ message: "Appointment time is outside office hours" });
-    return;
-  }
+//   const existingAppointment = await Appointment.findOne({
+//     start: { $lt: end },
+//     end: { $gt: start },
+//   });
+//   const officeHoursStart = new Date(start);
+//   const officeHoursEnd = new Date(end);
 
-  if (existingAppointment) {
-    res.status(400).json({
-      message:
-        "The selected time slot is already booked. Please choose a different time.",
-    });
-    return;
-  }
+//   console.log(officeHoursStart.getHours(), officeHoursEnd.getHours());
 
+//   // Assuming office hours are from 9 AM to 5 PM
+//   const officeStartHour = 9;
+//   const officeEndHour = 17;
+
+//   if (
+//     officeHoursStart.getHours() < officeStartHour ||
+//     officeHoursEnd.getHours() >= officeEndHour
+//   ) {
+//     res
+//       .status(400)
+//       .json({ message: "Appointment time is outside office hours" });
+//     return;
+//   }
+
+//   if (existingAppointment) {
+//     res.status(400).json({
+//       message:
+//         "The selected time slot is already booked. Please choose a different time.",
+//     });
+//     return;
+//   }
+
+//   try {
+//     await Appointment.create({ start, end, name, email, phone, notes });
+//     res.json({ message: "Appointment booked successfully" });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ message: "Internal Server Error" });
+//   }
+// };
+
+const BUSINESS_TZ = "America/New_York"; // safer than "Etc/GMT+5" if DST matters
+
+const book_an_appointment = async (req: Request, res: Response): Promise<void> => {
   try {
-    await Appointment.create({ start, end, name, email, phone, notes });
+    const { start, end, name, email, phone, notes } = req.body;
+
+    if (!start || !end) {
+      res.status(400).json({ message: "Missing required fields" });
+      return;
+    }
+
+    // Parse input (frontend sends local string with GMT offset)
+    const startDt = DateTime.fromJSDate(new Date(start)); // detect offset from input
+    const endDt = DateTime.fromJSDate(new Date(end));
+
+    // Convert to business timezone for office hour check
+    const startLocal = startDt.setZone(BUSINESS_TZ);
+    const endLocal = endDt.setZone(BUSINESS_TZ);
+
+    console.log("Start local:", startLocal.hour, "End local:", endLocal.hour);
+
+    // check if in the past
+    const now = DateTime.now().setZone(BUSINESS_TZ);
+    if (startLocal < now) {
+      res.status(400).json({ message: "Appointment cannot be placed in the past" });
+      return;
+    }
+    // Check for conflicts
+    const conflict = await Appointment.findOne({
+      start: { $lt: endDt.toUTC().toJSDate() }, 
+      end: { $gt: startDt.toUTC().toJSDate() },
+    });
+    if (conflict) {
+      res.status(400).json({
+        message: "The selected time slot is already booked. Please choose a different time.",
+      });
+      return;
+    }
+
+    // Validate business rules
+    if (startLocal.hour < 9 || endLocal.hour > 17 || (endLocal.hour === 17 && endLocal.minute > 0)) {
+      res.status(400).json({ message: "Appointment time is outside office hours" });
+      return;
+    }
+
+   
+
+    if (startDt >= endDt) {
+      res.status(400).json({ message: "End date must be later than start date" });
+      return;
+    }
+
+    // Save in UTC
+    await Appointment.create({
+      start: startDt.toUTC().toJSDate(),
+      end: endDt.toUTC().toJSDate(),
+      name,
+      email,
+      phone,
+      notes,
+    });
+
     res.json({ message: "Appointment booked successfully" });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

@@ -360,6 +360,21 @@ const ContactDetailSchema = new Schema(
   { timestamps: true, versionKey: false }
 );
 
+const SocialDetailSchema = new Schema(
+  {
+    platform: {
+      type: String,
+      required: true,
+    },
+    url: {
+      type: String,
+      required: true,
+    },
+    icon: { type: String, required: false },
+  },
+  { timestamps: true, versionKey: false }
+);
+
 const User = model("User", UserSchema);
 const OTP = model("OTP", OTPSchema);
 const Favorite = model("Favorite", FavoriteSchema);
@@ -373,6 +388,7 @@ const Contact = model("Contact", ContactSchema);
 const FAQ = model("FAQ", FAQSchema);
 const Notification = model("Notification", NotificationSchema);
 const ManageContact = model("Manage-Contact", ContactDetailSchema);
+const ManageSocial = model("Manage-Social", SocialDetailSchema);
 
 export {
   User,
@@ -388,4 +404,5 @@ export {
   FAQ,
   Notification,
   ManageContact,
+  ManageSocial,
 };

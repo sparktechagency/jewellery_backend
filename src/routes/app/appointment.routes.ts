@@ -1,6 +1,6 @@
 import {
-  get_unavailable_times,
   book_an_appointment,
+  get_unavailable_times,
 } from "@controllers/appointment";
 import { Router } from "express";
 
