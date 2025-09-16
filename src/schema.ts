@@ -365,6 +365,7 @@ const SocialDetailSchema = new Schema(
     platform: {
       type: String,
       required: true,
+      enum: ["facebook", "twitter", "instagram", "tiktok", "youtube", "pinterest", "telegram"],
     },
     url: {
       type: String,

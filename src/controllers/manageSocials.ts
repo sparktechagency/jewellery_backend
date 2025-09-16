@@ -8,6 +8,11 @@ const addSocialInfo = async (req: Request, res: Response) => {
     platform,
     url,
   });
+
+  if(platform !== "facebook" && platform !== "twitter" && platform !== "instagram" && platform !== "tiktok" && platform !== "youtube" && platform !== "pinterest" && platform !== "telegram"){
+    res.status(400).json({ message: "Platform must be one of the following: facebook, twitter, instagram, tiktok, youtube, pinterest, telegram" });
+    return;
+  }
     if (error) {
     res.status(400).json({ message: error });
     return;
@@ -28,7 +33,7 @@ const addSocialInfo = async (req: Request, res: Response) => {
 };
 
 const getSocialInfo = async (req: Request, res: Response) => {
-  const info = await ManageSocial.findOne({});
+  const info = await ManageSocial.find({});
   if (!info) {
     res.status(200).json({ message: "Social info not found" });
     return;
