@@ -213,7 +213,7 @@ const get_product = async (req: Request, res: Response) => {
 
   const similarProducts = await Product.find(
     { category: product.category, _id: { $ne: product._id } },
-    { _id: 0, __v: 0 }
+    { _id: 1, __v: 0 }
   ).limit(5);
 
   res.json({ product, similarProducts });
