@@ -6,11 +6,12 @@ const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
 if (!stripeSecretKey) {
   throw new Error("Stripe secret key is not defined in environment variables");
 }
+
 export const createCheckoutSession = async ({
-  userId,
+  order_data,
   line_items,
 }: {
-  userId: string;
+  order_data: any;
   line_items: any;
 }) => {
   try {
@@ -19,30 +20,23 @@ export const createCheckoutSession = async ({
     });
 
     const session = await stripe.checkout.sessions.create({
-      client_reference_id: userId,
+      payment_method_types: ['card'],
       line_items,
-      //   line_items: [
-      //     {
-      //       price_data: {
-      //         currency: "usd",
-      //         product_data: {
-      //           name: "Avantra",
-      //         },
-      //         unit_amount: 1000,
-      //         recurring: {
-      //           interval: "month",
-      //         },
-      //       },
-      //       quantity: 1,
-      //     },
-      //   ],
       mode: "payment",
-      success_url: process.env.PAYMENT_SUCCESS_URL || "http://localhost:3000/success.html",
+      success_url: process.env.PAYMENT_SUCCESS_URL || "http://localhost:3000/success.html?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: process.env.PAYMENT_CANCEL_URL || "http://localhost:3000/cancel.html",
+      expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // Session expires in 30 minutes
+      metadata: {
+        order_data: JSON.stringify(order_data), // Store order data in session metadata
+      },
+      shipping_address_collection: {
+        allowed_countries: ['US', 'CA'], // Adjust as needed
+      },
     });
 
     return session;
   } catch (error) {
-    return error;
+    console.error("Error creating checkout session:", error);
+    throw error;
   }
 };
