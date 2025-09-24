@@ -500,6 +500,7 @@ const edit_order = async (req: Request, res: Response) => {
 const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
   const webhook_secret = process.env.STRIPE_WEBHOOK_SECRET;
   const sig = req.headers["stripe-signature"];
+  console.log("Webhook received:", req.headers, req.body);
 
   if (!sig) {
     res.status(400).send("Missing Stripe signature");
@@ -521,6 +522,7 @@ const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
 
   try {
     const session = event.data.object as Stripe.Checkout.Session;
+    
 
     if (event.type === "checkout.session.completed") {
       // Retrieve the complete session with line items
@@ -561,8 +563,8 @@ const stripe_webhook = async (req: Request, res: Response): Promise<void> => {
         );
       }
 
-      triggerNotification("NEW_ORDER", { orderId: order._id });
-      triggerNotification("PAYMENT_CONFIRMED", { orderId: order._id });
+      // triggerNotification("NEW_ORDER", { orderId: order._id });
+      // triggerNotification("PAYMENT_CONFIRMED", { orderId: order._id });
 
       console.log(`Order created successfully: ${order._id}`);
       
