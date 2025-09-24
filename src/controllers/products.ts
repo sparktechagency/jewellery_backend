@@ -521,7 +521,7 @@ const get_products = async (req: Request, res: Response) => {
           averageRating: {
             $cond: {
               if: { $gt: [{ $size: "$ratings" }, 0] },
-              then: { $avg: "$ratings.rating" }, // Adjust if ratings is an array of objects with 'rating' field
+              then: { $avg: "$ratings.rating" },
               else: 0
             }
           }
@@ -540,7 +540,7 @@ const get_products = async (req: Request, res: Response) => {
       // Stage 4: Lookup category information
       {
         $lookup: {
-          from: "categories", // Make sure this matches your categories collection name
+          from: "categories",
           localField: "category",
           foreignField: "_id",
           as: "category"
@@ -607,30 +607,16 @@ const get_products = async (req: Request, res: Response) => {
       
       // Stage 9: Add sorting based on effectivePrice
       ...(sort === "low_to_high" ? [{ $sort: { effectivePrice: 1 } }] : 
-          sort === "high_to_low" ? [{ $sort: { effectivePrice: -1 } }] : []),
+          sort === "high_to_low" ? [{ $sort: { effectivePrice: -1 } }] : 
+          sort === "newest" ? [{ $sort: { createdAt: -1 } }] :
+          sort === "popular" ? [{ $sort: { averageRating: -1 } }] :
+          []), // Default sorting (you can add your default here)
       
       // Stage 10: Add pagination
       { $skip: skip },
-      { $limit: pageSize },
+      { $limit: pageSize }
       
-      // Stage 11: Project only necessary fields (optional - remove if you want all fields)
-      {
-        $project: {
-          name: 1,
-          price: 1,
-          discountPrice: 1,
-          effectivePrice: 1,
-          availability: 1,
-          ratings: 1,
-          averageRating: 1,
-          details: 1,
-          description: 1,
-          category: 1,
-          subcategory: 1,
-          images: 1,
-          // Include other fields you need
-        }
-      }
+      // REMOVED: Projection stage to return all fields
     ];
 
     // Execute aggregation for products
@@ -671,7 +657,6 @@ const get_products = async (req: Request, res: Response) => {
     };
 
     res.json({ 
-      success: true,
       products, 
       pagination 
     });
