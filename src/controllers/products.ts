@@ -241,6 +241,28 @@ const add_review = async (req: Request, res: Response) => {
     res.status(400).json({ message: "Invalid product_id" });
     return;
   }
+  //find if user has already reviewed the product with same email
+  const existingReview = await Review.findOne({
+    product: product_id,
+    email,
+  });
+
+  if (existingReview) {
+    res.status(400).json({ message: "You have already reviewed this product" });
+    return;
+  }
+
+  // product is purchased check 
+  const orders = await Order.find({
+    "ready_made_details.products.product_id": product_id,
+    "user.email": email,
+    order_status: "delivered",
+  });
+
+  if (orders.length === 0) {
+    res.status(400).json({ message: "You can only review products you have purchased" });
+    return;
+  }
 
   try {
     await Review.create({

@@ -13,7 +13,7 @@ import { Router } from "express";
 const router = Router();
 
 router.get("/review", get_reviews);
-router.post("/review", add_review);
+router.post("/review",authorize(["user"]), add_review);
 
 router.get("/favorites", authorize(["user"]), get_favorites);
 router.post("/favorites", authorize(["user"]), add_remove_favorites);
