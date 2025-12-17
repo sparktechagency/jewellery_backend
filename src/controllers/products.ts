@@ -534,8 +534,8 @@ const get_products = async (req: Request, res: Response) => {
         $addFields: {
           effectivePrice: {
             $cond: {
-              if: { $and: [{ $gt: ["$discountPrice", 0] }, { $ifNull: ["$discountPrice", false] }] },
-              then: "$discountPrice",
+              if: { $and: [{ $gt: ["$discount_price", 0] }, { $ifNull: ["$discount_price", false] }] },
+              then: "$discount_price",
               else: "$price"
             }
           },

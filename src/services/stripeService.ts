@@ -23,8 +23,8 @@ export const createCheckoutSession = async ({
       payment_method_types: ['card'],
       line_items,
       mode: "payment",
-      success_url: process.env.PAYMENT_SUCCESS_URL || "http://localhost:3000/success.html?session_id={CHECKOUT_SESSION_ID}",
-      cancel_url: process.env.PAYMENT_CANCEL_URL || "http://localhost:3000/cancel.html",
+      success_url: process.env.PAYMENT_SUCCESS_URL || "http://13.60.228.122:5000/payment-success?session_id={CHECKOUT_SESSION_ID}",
+      cancel_url: process.env.PAYMENT_CANCEL_URL || "http://13.60.228.122:5000/payment/cancel",
       expires_at: Math.floor(Date.now() / 1000) + (30 * 60), // Session expires in 30 minutes
       metadata: {
         order_data: JSON.stringify(order_data), // Store order data in session metadata
