@@ -481,13 +481,13 @@ const get_products = async (req: Request, res: Response) => {
         { $or: [
           { 
             $and: [
-              { discountPrice: { $gt: 0 } },
-              { discountPrice: { $gte: Number(price_min), $lte: Number(price_max) } }
+              { discount_price: { $gt: 0 } },
+              { discount_price: { $gte: Number(price_min), $lte: Number(price_max) } }
             ]
           },
           { 
             $and: [
-              { $or: [{ discountPrice: 0 }, { discountPrice: { $exists: false } }] },
+              { $or: [{ discount_price: 0 }, { discount_price: { $exists: false } }] },
               { price: { $gte: Number(price_min), $lte: Number(price_max) } }
             ]
           }
@@ -496,10 +496,10 @@ const get_products = async (req: Request, res: Response) => {
     } else if (price_min) {
       filters.$and = [
         { $or: [
-          { discountPrice: { $gte: Number(price_min) } },
+          { discount_price: { $gte: Number(price_min) } },
           { 
             $and: [
-              { $or: [{ discountPrice: 0 }, { discountPrice: { $exists: false } }] },
+              { $or: [{ discount_price: 0 }, { discount_price: { $exists: false } }] },
               { price: { $gte: Number(price_min) } }
             ]
           }
@@ -508,10 +508,10 @@ const get_products = async (req: Request, res: Response) => {
     } else if (price_max) {
       filters.$and = [
         { $or: [
-          { discountPrice: { $lte: Number(price_max) } },
+          { discount_price: { $lte: Number(price_max) } },
           { 
             $and: [
-              { $or: [{ discountPrice: 0 }, { discountPrice: { $exists: false } }] },
+              { $or: [{ discount_price: 0 }, { discount_price: { $exists: false } }] },
               { price: { $lte: Number(price_max) } }
             ]
           }
